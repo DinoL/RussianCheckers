@@ -13,16 +13,11 @@
 #include <string>
 
 
-enum class Turn
-{
-    WHITE,
-    BLACK
-};
-
 class MyModel : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int activePiece READ activePiece WRITE setActivePiece NOTIFY onActivePieceChange)
+    Q_PROPERTY(bool whiteTurn READ whiteTurn WRITE setWhiteTurn NOTIFY onTurnChange)
 public:
     using state_t = uint32_t;
 
@@ -54,36 +49,24 @@ public:
         //print();
     }
 
-    Q_INVOKABLE bool has_piece(int cell) const
+    Q_INVOKABLE bool has_any_piece(int cell) const
     {
-        return (1 << cell) & (_white | _black);
+        return has_white_piece(cell) || has_black_piece(cell);
     }
 
     Q_INVOKABLE bool has_white_piece(int cell) const
     {
-        return (1 << cell) & _white;
+        return has_piece(cell, true);
     }
 
     Q_INVOKABLE bool has_black_piece(int cell) const
     {
-        return (1 << cell) & _black;
+        return has_piece(cell, false);
     }
 
-    state_t next_state(state_t state)
+    Q_INVOKABLE bool can_move_from(int cell) const
     {
-        return ~state & (state << 4);
-    }
-
-    Q_INVOKABLE bool can_move_from(int index) const
-    {
-        const bool white_turn = _turn == Turn::WHITE;
-        state_t a = white_turn ? _white : _black;
-        state_t b = white_turn ? _black : _white;
-        state_t cur = a & (1 << index);
-        state_t next = white_turn ? (cur<<4)|((cur&0xe0e0e0e)<<3)|((cur&0x707070)<<5) :
-                                    (cur>>4)|((cur&0xe0e0e0e)>>5)|((cur&0x70707070)>>3);
-
-        return ~a & ~b & (next | get_eat_fields());
+        return has_piece(cell, _white_turn) && (moves((1 << cell), _white_turn) != 0);
     }
 
     void print() const {
@@ -116,92 +99,45 @@ public:
         }
     }
 
-    state_t get_movable_fields() const
-    {
-        const state_t a = current_state();
-        const state_t b = opponent_state();
-        state_t next = is_white_turn() ? (a<<4)|((a&0xe0e0e0e)<<3)|((a&0x707070)<<5) :
-                                         (a>>4)|((a&0xe0e0e0e)>>5)|((a&0x70707070)>>3);
-        return ~a & ~b & (next | get_eat_fields());
-    }
-
     Q_INVOKABLE bool has_movable_fields() const
     {
-        return get_movable_fields() != 0;
+        return current_moves() != 0;
     }
 
-    Q_INVOKABLE bool can_move_to(int index) const
+    Q_INVOKABLE bool can_move_to(int cell) const
     {
-        return get_movable_fields() & (1 << index);
+        return current_moves() & (1 << cell);
     }
 
-    Q_INVOKABLE bool is_white_turn() const
-    {
-       return _turn == Turn::WHITE;
-    }
-
-    state_t& current_state()
-    {
-        const bool white_turn = is_white_turn();
-        return white_turn ? _white : _black;
-    }
-
-    state_t current_state() const
-    {
-        const bool white_turn = is_white_turn();
-        return white_turn ? _white : _black;
-    }
-
-    state_t& opponent_state()
-    {
-        const bool white_turn = is_white_turn();
-        return white_turn ? _black : _white;
-    }
-
-    state_t opponent_state() const
-    {
-        const bool white_turn = is_white_turn();
-        return white_turn ? _black : _white;
-    }
-
-    Q_INVOKABLE void move_piece_to(int index)
+    Q_INVOKABLE void move_piece_to(int cell)
     {
         int piece = activePiece();
         if (piece < 0)
             return;
 
-        state_t& a = current_state();
+        state_t a = get_state(_white_turn);
         a &= ~(1 << piece);
-        a |= (1 << index);
+        a |= (1 << cell);
         setActivePiece(-1);
+
+        if (_white_turn)
+            _white = a;
+        else
+            _black = a;
+
         switch_turn();
+
+//        std::bitset<32> xw(_white);
+//        std::bitset<32> xb(_black);
+//        std::cout << "White: " << xw << " (" << _white << ')' << std::endl;
+//        std::cout << "Black: " << xb << " (" << _black << ')' << std::endl;
 
         //print();
     }
 
-    Q_INVOKABLE bool piece_can_move_to(int piece, int index) const
+    Q_INVOKABLE bool piece_can_move_to(int piece, int cell) const
     {
-        const state_t a = current_state();
-        const state_t b = opponent_state();
-        state_t cur = a & (1 << piece);
-        state_t next = is_white_turn() ? (cur<<4)|((cur&0xe0e0e0e)<<3)|((cur&0x707070)<<5) :
-                                    (cur>>4)|((cur&0xe0e0e0e)>>5)|((cur&0x70707070)>>3);
-
-        return ~a & ~b & next & (1 << index);
-    }
-
-    state_t get_eat_fields() const
-    {
-        return 0; // debug
-
-        const state_t a = current_state();
-        const state_t b = opponent_state();
-        state_t next =
-                 (((a&0x70707&(b>>4))<<(4+5))
-                |(((a&0xe0e0e)<<(3+4)))
-                |(((a&0x707070)<<(5+4)))
-                |(((a&0xe0e0e0&(b>>4)))>>(4+3)));
-        return next & ~a & ~b;
+        return moves((1 << piece), _white_turn) & (1 << cell);
     }
 
     Q_INVOKABLE int activePiece() const
@@ -209,12 +145,9 @@ public:
         return _activePiece;
     }
 
-    void switch_turn()
+    Q_INVOKABLE bool whiteTurn() const
     {
-        if (_turn == Turn::WHITE)
-            _turn = Turn::BLACK;
-        else
-            _turn = Turn::WHITE;
+        return _white_turn;
     }
 
 public slots:
@@ -227,14 +160,73 @@ public slots:
         emit onActivePieceChange(i_activePiece);
     }
 
+    void setWhiteTurn(bool whiteTurn)
+    {
+        if (_white_turn == whiteTurn)
+            return;
+
+        _white_turn = whiteTurn;
+        emit onTurnChange(whiteTurn);
+    }
+
 signals:
-    void onActivePieceChange(int i_activePiece);
+    void onActivePieceChange(int activePiece);
+    void onTurnChange(bool whiteTurn);
 
 private:
-    state_t _white = 0xfff; // 134345901;
-    state_t _black = 0xfff00000; //1538260992;
-    Turn _turn = Turn::WHITE;
-    int _activePiece;
+    void switch_turn()
+    {
+        _white_turn = !_white_turn;
+    }
+
+    state_t get_state(bool is_white) const
+    {
+        return is_white ? _white : _black;
+    }
+
+    state_t step_moves(state_t s, bool is_white) const
+    {
+        const state_t next = is_white ? (s<<4)|((s&0xe0e0e0e)<<3)|((s&0x707070)<<5) :
+                                        (s>>4)|((s&0xe0e0e0e)>>5)|((s&0x70707070)>>3);
+        return ~_white & ~_black & next;
+    }
+
+    state_t eat_moves(state_t s, bool is_white) const
+    {
+        return 0;
+        const state_t a = get_state(is_white);
+        const state_t b = get_state(!is_white);
+        const state_t next =
+                 (((s&0x70707&(b>>4))<<(4+5))
+                |(((s&0xe0e0e)<<(3+4)))
+                |(((s&0x707070)<<(5+4)))
+                |(((s&0xe0e0e0&(b>>4)))<<(4+3)));
+        //std::bitset<32> bs(next & ~a & ~b);
+        //std::cout << "eat_fields " << bs << std::endl;
+        return ~a & ~b & next;
+    }
+
+    state_t moves(state_t s, bool is_white) const
+    {
+        return step_moves(s, is_white)
+              | eat_moves(s, is_white);
+    }
+
+    state_t current_moves() const
+    {
+        return moves(get_state(_white_turn), _white_turn);
+    }
+
+    bool has_piece(int cell, bool is_white) const
+    {
+        return (1 << cell) & get_state(is_white);
+    }
+
+private:
+    state_t _white = 0xfff; //0b100000; // 134345901;
+    state_t _black = 0xfff00000; // 0b1000000000; //1538260992;
+    bool _white_turn = true;
+    int _activePiece = -1;
 };
 
 #endif // MODEL_H

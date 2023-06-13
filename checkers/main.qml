@@ -13,7 +13,7 @@ ApplicationWindow {
         id: board
         readonly property int squareSize: Math.min(root.width, root.height) / 8;
         property int hover: -1;
-        property bool whiteTurn : Model.is_white_turn();
+        property bool whiteTurn : Model.whiteTurn;
         property int curTurn: 0
 
         width: squareSize * 8
@@ -47,7 +47,7 @@ ApplicationWindow {
                 x: board.squareSize*(2*(index%4)+Math.floor(index/4)%2);
                 y: board.squareSize*(7-Math.floor(index/4));
                 z: 1
-                property bool has_piece: Model.has_piece(index);
+                property bool has_piece: Model.has_any_piece(index);
                 readonly property real gap: 0.075;
 
                 Rectangle {
@@ -59,8 +59,9 @@ ApplicationWindow {
                         //if (data > 1000)
                         //    suffix += ""
                         //console.log("color", index, board.hover)
-                        if (board.needUpate)
-                            suffix += ""
+
+                        //if (Model.can_eat(index))
+                        //    return "red";
 
                         if (index === Model.activePiece)
                             return "#a43b00";
@@ -68,7 +69,6 @@ ApplicationWindow {
                         if (index === board.hover)
                             return "#ff743f";
 
-                        var can_move_to = Model.can_move_to(index);
                         var can_move_from = Model.can_move_from(index);
                         if (Model.activePiece < 0 && can_move_from)
                             return "#e0856a";
@@ -94,7 +94,7 @@ ApplicationWindow {
                     visible: {
                         var cur = board.curTurn;
                         if (cur < 10000)
-                            return Model.has_piece(index)
+                            return Model.has_any_piece(index)
                         return true
                     }
 
@@ -135,11 +135,11 @@ ApplicationWindow {
                         if (Model.activePiece >= 0 && Model.piece_can_move_to(Model.activePiece, index)) {
                             //console.log("Move", Model.activePiece, "to", index)
                             Model.move_piece_to(index);
-                            board.whiteTurn = Model.is_white_turn();
+                            board.whiteTurn = Model.whiteTurn;
                             //root.update()
                             //console.log("man visibility after", index, cell.has_piece)
-                            cell.has_piece = Model.has_piece(index)
-                            //man.visible = Model.has_piece(index)
+                            cell.has_piece = Model.has_any_piece(index)
+                            //man.visible = Model.has_any_piece(index)
                             man.color = Model.has_white_piece(index) ? "#ffe" : "#444"
 
                             if (!Model.has_movable_fields())
