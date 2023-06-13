@@ -17,6 +17,12 @@ public:
         Q_UNUSED(parent);
     }
 
+    Q_INVOKABLE bool is_king(int cell) const
+    {
+        bool result = has_piece(_white_kings, cell) || has_piece(_black_kings, cell);
+        return result;
+    }
+
     Q_INVOKABLE bool has_any_piece(int cell) const
     {
         return has_white_piece(cell) || has_black_piece(cell);
@@ -24,17 +30,17 @@ public:
 
     Q_INVOKABLE bool has_white_piece(int cell) const
     {
-        return has_piece(cell, true);
+        return has_piece(_white, cell);
     }
 
     Q_INVOKABLE bool has_black_piece(int cell) const
     {
-        return has_piece(cell, false);
+        return has_piece(_black, cell);
     }
 
     Q_INVOKABLE bool can_move_from(int cell) const
     {
-        return has_piece(cell, _white_turn) && (moves((1 << cell), _white_turn) != 0);
+        return has_piece(get_state(_white_turn), cell) && (moves((1 << cell), _white_turn) != 0);
     }
 
     Q_INVOKABLE bool has_movable_fields() const
@@ -59,6 +65,19 @@ public:
         state_t b = get_state(!_white_turn);
         a = remove_piece(a, piece);
         a = set_piece(a, cell);
+
+        state_t& kings = _white_turn ? _white_kings : _black_kings;
+        if (has_piece(kings, piece))
+        {
+            kings = remove_piece(kings, piece);
+            kings = set_piece(kings, cell);
+        }
+
+        bool become_king = (_white_turn && cell > 27) || (!_white_turn && cell < 4);
+        if (become_king)
+        {
+            kings = set_piece(kings, cell);
+        }
 
         if (_white_turn)
             _white = a;
@@ -180,9 +199,9 @@ private:
         return eat_moves(get_state(_white_turn), _white_turn);
     }
 
-    bool has_piece(int cell, bool is_white) const
+    bool has_piece(state_t s, int cell) const
     {
-        return (1 << cell) & get_state(is_white);
+        return s & (1 << cell);
     }
 
     state_t remove_piece(state_t s, int cell) const
@@ -203,6 +222,8 @@ private:
 private:
     state_t _white = 0xfff;
     state_t _black = 0xfff00000;
+    state_t _white_kings = 0;
+    state_t _black_kings = 0;
     bool _white_turn = true;
     int _eatingPiece = -1;
     int _activePiece = -1;

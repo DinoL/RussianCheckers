@@ -93,9 +93,26 @@ ApplicationWindow {
                     radius: width*0.5
                     visible: {
                         var cur = board.curTurn;
-                        if (cur < 10000)
-                            return Model.has_any_piece(index)
-                        return true
+                        return Model.has_any_piece(index)
+                    }
+
+                    Rectangle {
+                        width: parent.width * 0.7
+                        height: width
+                        color: {
+                            var cur = board.curTurn
+                            Model.has_white_piece(index) ? "#eec" : "black"
+                        }
+                        border.color: "black"
+
+                        x: (parent.width - width) * 0.5
+                        y: x
+                        z: 2
+                        radius: width*0.5
+                        visible: {
+                            var cur = board.curTurn;
+                            return Model.is_king(index) ? true : false;
+                        }
                     }
 
                     Rectangle {
