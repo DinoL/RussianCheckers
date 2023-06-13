@@ -23,12 +23,12 @@ public:
 
     void get_mask(const std::vector<int>& v, const std::string& name)
     {
-        int mask = 0;
+        state_t mask = 0;
         for(int i : v)
         {
             mask += (1 << i) + (1 << (i+8)) + (1 << (i+16));
         }
-        std::cout << mask << ' ' << name << std::endl;
+        std::cout << std::hex << mask << ' ' << name << std::endl;
     }
 
     MyModel(QObject* parent = nullptr)
@@ -193,23 +193,23 @@ private:
 
     state_t eat_moves(state_t s, bool is_white) const
     {
-        return 0;
-        const state_t a = get_state(is_white);
         const state_t b = get_state(!is_white);
         const state_t next =
-                 (((s&0x70707&(b>>4))<<(4+5))
-                |(((s&0xe0e0e)<<(3+4)))
-                |(((s&0x707070)<<(5+4)))
-                |(((s&0xe0e0e0&(b>>4)))<<(4+3)));
-        //std::bitset<32> bs(next & ~a & ~b);
-        //std::cout << "eat_fields " << bs << std::endl;
-        return ~a & ~b & next;
+                (((s&0x70707&(b>>4))<<9)
+                |((s&0x707070&(b>>5))<<9)
+                |((s&0xe0e0e0&(b>>4))<<7)
+                |((s&0xe0e0e&(b>>3))<<7)
+                |((s&0xe0e0e000&(b<<4))>>9)
+                |((s&0xe0e0e00&(b<<5))>>9)
+                |((s&0x7070700&(b<<4))>>7)
+                |((s&0x70707000&(b<<3))>>7));
+        return ~_white & ~_black & next;
     }
 
     state_t moves(state_t s, bool is_white) const
     {
-        return step_moves(s, is_white)
-              | eat_moves(s, is_white);
+        state_t e = eat_moves(s, is_white);
+        return e ? e : step_moves(s, is_white);
     }
 
     state_t current_moves() const
