@@ -208,13 +208,18 @@ private:
 
     state_t moves(state_t s, bool is_white) const
     {
-        state_t e = eat_moves(s, is_white);
-        return e ? e : step_moves(s, is_white);
+        return current_eat_moves() ?  eat_moves(s, is_white) :
+                                      step_moves(s, is_white);
     }
 
     state_t current_moves() const
     {
         return moves(get_state(_white_turn), _white_turn);
+    }
+
+    state_t current_eat_moves() const
+    {
+        return eat_moves(get_state(_white_turn), _white_turn);
     }
 
     bool has_piece(int cell, bool is_white) const
