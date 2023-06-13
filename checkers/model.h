@@ -2,15 +2,6 @@
 #define MODEL_H
 
 #include <QObject>
-#include <QtQml/qqml.h>
-#include <QQmlEngine>
-#include <QtQuick/QQuickItem>
-#include <iostream>
-#include <bitset>
-#include <intrin.h>
-#include <stdio.h>
-#include <vector>
-#include <string>
 
 
 class MyModel : public QObject
@@ -21,32 +12,9 @@ class MyModel : public QObject
 public:
     using state_t = uint32_t;
 
-    void get_mask(const std::vector<int>& v, const std::string& name)
-    {
-        state_t mask = 0;
-        for(int i : v)
-        {
-            mask += (1 << i) + (1 << (i+8)) + (1 << (i+16));
-        }
-        std::cout << std::hex << mask << ' ' << name << std::endl;
-    }
-
     MyModel(QObject* parent = nullptr)
     {
         Q_UNUSED(parent);
-
-        //std::cout << "Model created" << std::endl;
-        //std::bitset<32> xw(_white);
-        //std::bitset<32> xb(_black);
-        //std::cout << "White: " << xw << " (" << _white << ')' << std::endl;
-        //std::cout << "Black: " << xb << " (" << _black << ')' << std::endl;
-        //
-        //get_mask({0,1,2}, "4+5");
-        //get_mask({4,5,6}, "5+4");
-        //get_mask({1,2,3}, "3+4");
-        //get_mask({5,6,7}, "4+3");
-
-        //print();
     }
 
     Q_INVOKABLE bool has_any_piece(int cell) const
@@ -69,36 +37,6 @@ public:
         return has_piece(cell, _white_turn) && (moves((1 << cell), _white_turn) != 0);
     }
 
-    void print() const {
-        std::string black_dot = "8";
-        std::string white_dot = "o";
-        std::string empty = "_";
-
-        for (int row = 7; row >= 0; --row)
-        {
-            for (int col = 0; col < 8; ++col)
-            {
-                if ((col + row) % 2 == 0)
-                {
-                    int index = 4*row + (col / 2);
-                    if (_white & (1 << index))
-                    {
-                        std::cout << white_dot;
-                        continue;
-                    }
-                    if (_black & (1 << index))
-                    {
-                        std::cout << black_dot;
-                        continue;
-                    }
-
-                }
-                std::cout << empty;
-            }
-            std::cout << std::endl;
-        }
-    }
-
     Q_INVOKABLE bool has_movable_fields() const
     {
         return current_moves() != 0;
@@ -115,24 +53,40 @@ public:
         if (piece < 0)
             return;
 
+        const bool eat_move = current_eat_moves();
+
         state_t a = get_state(_white_turn);
-        a &= ~(1 << piece);
-        a |= (1 << cell);
-        setActivePiece(-1);
+        state_t b = get_state(!_white_turn);
+        a = remove_piece(a, piece);
+        a = set_piece(a, cell);
 
         if (_white_turn)
             _white = a;
         else
             _black = a;
 
-        switch_turn();
+        if (eat_move)
+        {
+            int center = get_center(piece, cell);
+            b = remove_piece(b, center);
+            if (!_white_turn)
+                _white = b;
+            else
+                _black = b;
+        }
 
-//        std::bitset<32> xw(_white);
-//        std::bitset<32> xb(_black);
-//        std::cout << "White: " << xw << " (" << _white << ')' << std::endl;
-//        std::cout << "Black: " << xb << " (" << _black << ')' << std::endl;
-
-        //print();
+        bool can_eat_more = eat_moves(1 << cell, _white_turn);
+        if (eat_move && can_eat_more)
+        {
+            setActivePiece(cell);
+            _eatingPiece = cell;
+        }
+        else
+        {
+            switch_turn();
+            setActivePiece(-1);
+            _eatingPiece = -1;
+        }
     }
 
     Q_INVOKABLE bool piece_can_move_to(int piece, int cell) const
@@ -208,6 +162,10 @@ private:
 
     state_t moves(state_t s, bool is_white) const
     {
+        if (_eatingPiece >= 0)
+        {
+            return eat_moves(s & (1 << _eatingPiece), is_white);
+        }
         return current_eat_moves() ?  eat_moves(s, is_white) :
                                       step_moves(s, is_white);
     }
@@ -227,10 +185,26 @@ private:
         return (1 << cell) & get_state(is_white);
     }
 
+    state_t remove_piece(state_t s, int cell) const
+    {
+        return s & ~(1 << cell);
+    }
+
+    state_t set_piece(state_t s, int cell) const
+    {
+        return s | (1 << cell);
+    }
+
+    int get_center(int start, int end) const
+    {
+        return (start + end + (start / 4) % 2) / 2;
+    }
+
 private:
-    state_t _white = 0xfff; //0b100000; // 134345901;
-    state_t _black = 0xfff00000; // 0b1000000000; //1538260992;
+    state_t _white = 0xfff;
+    state_t _black = 0xfff00000;
     bool _white_turn = true;
+    int _eatingPiece = -1;
     int _activePiece = -1;
 };
 
