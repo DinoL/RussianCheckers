@@ -44,12 +44,18 @@ public:
     MyModel(QObject* parent = nullptr)
     {
         Q_UNUSED(parent);
+        reset();
     }
 
     Q_INVOKABLE bool is_king(int cell) const
     {
         bool result = has_piece(_white_kings, cell) || has_piece(_black_kings, cell);
         return result;
+    }
+
+    Q_INVOKABLE void restart()
+    {
+        reset();
     }
 
     Q_INVOKABLE bool has_any_piece(int cell) const
@@ -363,14 +369,25 @@ private:
         return (start + end + (start / 4) % 2) / 2;
     }
 
+    void reset()
+    {
+        _white = 0xfff;
+        _black = 0xfff00000;
+        _white_kings = 0;
+        _black_kings = 0;
+        _white_turn = true;
+        _eatingPiece = -1;
+        _activePiece = -1;
+    }
+
 private:
-    state_t _white = 0xfff;
-    state_t _black = 0xfff00000;
-    state_t _white_kings = 0;
-    state_t _black_kings = 0;
-    bool _white_turn = true;
-    int _eatingPiece = -1;
-    int _activePiece = -1;
+    state_t _white;
+    state_t _black;
+    state_t _white_kings;
+    state_t _black_kings;
+    bool _white_turn;
+    int _eatingPiece;
+    int _activePiece;
 };
 
 #endif // MODEL_H

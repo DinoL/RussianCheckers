@@ -1,6 +1,8 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Layouts 1.0
+import QtQuick.Dialogs 1.1
+
 
 ApplicationWindow {
     id: root
@@ -8,6 +10,12 @@ ApplicationWindow {
     width: 600
     height: 600
     title: qsTr("Russian checkers")
+
+    MessageDialog {
+        id: gameEnded
+        title: "Game ended"
+        text: "Someone has lost the game"
+    }
 
     Rectangle {
         id: board
@@ -55,14 +63,6 @@ ApplicationWindow {
                     height: parent.height
                     color: {
                         var data = board.curTurn
-                        //var suffix = ""
-                        //if (data > 1000)
-                        //    suffix += ""
-                        //console.log("color", index, board.hover)
-
-                        //if (Model.can_eat(index))
-                        //    return "red";
-
                         if (index === Model.activePiece)
                             return "#a43b00";
 
@@ -144,25 +144,22 @@ ApplicationWindow {
                     hoverEnabled: true
 
                     onPressed: {
-                        //console.log("man visibility before", index, cell.has_piece)
                         if (Model.can_move_from(index)) {
                             var to_set = Model.activePiece === index ? -1 : index
                             Model.setActivePiece(to_set);
                         }
                         if (Model.activePiece >= 0 && Model.piece_can_move_to(Model.activePiece, index)) {
-                            //console.log("Move", Model.activePiece, "to", index)
                             Model.move_piece_to(index);
                             board.whiteTurn = Model.whiteTurn;
-                            //root.update()
-                            //console.log("man visibility after", index, cell.has_piece)
                             cell.has_piece = Model.has_any_piece(index)
-                            //man.visible = Model.has_any_piece(index)
                             man.color = Model.has_white_piece(index) ? "#ffe" : "#444"
 
                             if (!Model.has_movable_fields())
                             {
-                                var player_name = board.whiteTurn ? "white" : "black"
-                                console.log(player_name + " has lost the game")
+                                var player_name = board.whiteTurn ? "White" : "Black"
+                                gameEnded.text = (player_name + " has lost the game")
+                                gameEnded.open()
+                                Model.restart()
                             }
                         }
                         board.curTurn += 1
