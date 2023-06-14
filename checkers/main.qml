@@ -20,7 +20,6 @@ ApplicationWindow {
     Rectangle {
         id: board
         readonly property int squareSize: Math.min(root.width, root.height) / 8;
-        property int hover: -1;
         property bool whiteTurn : Model.whiteTurn;
         property int curTurn: 0
 
@@ -66,17 +65,14 @@ ApplicationWindow {
                         if (index === Model.activePiece)
                             return "#a43b00";
 
-                        if (index === board.hover)
-                            return "#ff743f";
-
                         var can_move_from = Model.can_move_from(index);
                         if (Model.activePiece < 0 && can_move_from)
                             return "#e0856a";
 
                         if (Model.activePiece >= 0 && Model.piece_can_move_to(Model.activePiece, index))
-                            return "#e0856a";
+                            return "#3fbf00"
 
-                        return "#ee8d22" // + suffix;
+                        return "#ee8d22"
                     }
                 }
                 Rectangle {
@@ -141,7 +137,6 @@ ApplicationWindow {
                     id: cellTouch;
                     width: parent.width
                     height: parent.height
-                    hoverEnabled: true
 
                     onPressed: {
                         if (Model.can_move_from(index)) {
@@ -163,16 +158,6 @@ ApplicationWindow {
                             }
                         }
                         board.curTurn += 1
-                    }
-                    onEntered: {
-                        if (cell.has_piece) {
-                            board.hover = index
-                        }
-                    }
-                    onExited: {
-                        if (cell.has_piece) {
-                            board.hover = -1
-                        }
                     }
                 }
             }
