@@ -91,7 +91,6 @@ public:
         const bool eat_move = current_eat_moves();
 
         state_t a = get_state(_white_turn);
-        state_t b = get_state(!_white_turn);
         a = remove_piece(a, piece);
         a = set_piece(a, cell);
 
@@ -115,12 +114,28 @@ public:
 
         if (eat_move)
         {
-            int center = get_center(piece, cell);
-            b = remove_piece(b, center);
+            const state_t bottom = 0xf;
+            const state_t left = 0x1010101;
+            const state_t right = 0x80808080;
+            const state_t top = 0xf0000000;
+            state_t start = (1 << std::min(piece, cell));
+            state_t end = (1 << std::max(piece, cell));
+            state_t to_remove = ~(start | end) &
+                    (straight_moves_in_direction(start, top|right, Direction(4, 5)) &
+                     straight_moves_in_direction(end, bottom|left, Direction(-5, -4))) |
+                    (straight_moves_in_direction(start, top|left, Direction(3, 4)) &
+                     straight_moves_in_direction(end, bottom|right, Direction(-4, -3)));
+
             if (!_white_turn)
-                _white = b;
+            {
+                _white &= ~to_remove;
+                _white_kings &= ~to_remove;
+            }
             else
-                _black = b;
+            {
+                _black &= ~to_remove;
+                _black_kings &= ~to_remove;
+            }
         }
 
         bool can_eat_more = eat_moves(1 << cell, _white_turn);
@@ -207,7 +222,22 @@ private:
                 |((s&0xe0e0e00&(b<<5))>>9)
                 |((s&0x7070700&(b<<4))>>7)
                 |((s&0x70707000&(b<<3))>>7));
-        return ~_white & ~_black & next;
+        state_t kings = is_white ? _white_kings : _black_kings;
+        const state_t kings_eat_moves = king_eat_moves(s & kings, is_white);
+        return ~_white & ~_black & (next | kings_eat_moves);
+    }
+
+    state_t straight_moves_in_direction(state_t s, state_t border, const Direction& dir) const
+    {
+        state_t moves = 0;
+        state_t next = dir.move(s);
+        while (s & ~border)
+        {
+            moves |= next;
+            s = next;
+            next = dir.move(s);
+        }
+        return moves;
     }
 
     state_t king_moves_in_direction(state_t s, state_t border, const Direction& dir) const
@@ -220,7 +250,7 @@ private:
         {
             moves |= next;
             s = next;
-            next = next = dir.move(s);
+            next = dir.move(s);
         }
         return moves;
     }
@@ -242,6 +272,53 @@ private:
             moves |= king_moves_in_direction(start, top|left, Direction(3, 4));
             moves |= king_moves_in_direction(start, bottom|right, Direction(-4, -3));
             moves |= king_moves_in_direction(start, bottom|left, Direction(-5, -4));
+        }
+        return moves;
+    }
+
+    state_t king_eat_moves_in_direction(state_t s, state_t border, const Direction& dir, bool is_white) const
+    {
+        const state_t p = (_white | _black);
+        const state_t b = get_state(!is_white);
+
+        state_t moves = 0;
+        state_t next = dir.move(s);
+        while ((next & ~p) && (s & ~border))
+        {
+            s = next;
+            next = next = dir.move(s);
+        }
+        if (next & b)
+        {
+            s = next;
+            next = next = dir.move(s);
+            while ((next & ~p) && (s & ~border))
+            {
+                moves |= next;
+                s = next;
+                next = next = dir.move(s);
+            }
+        }
+        return moves;
+    }
+
+    state_t king_eat_moves(state_t s, bool is_white) const
+    {
+        const state_t bottom = 0xf;
+        const state_t left = 0x1010101;
+        const state_t right = 0x80808080;
+        const state_t top = 0xf0000000;
+        state_t moves = 0;
+
+        while (s)
+        {
+            state_t start = s & ~(s-1);
+            s ^= start;
+
+            moves |= king_eat_moves_in_direction(start, top|right, Direction(4, 5), is_white);
+            moves |= king_eat_moves_in_direction(start, top|left, Direction(3, 4), is_white);
+            moves |= king_eat_moves_in_direction(start, bottom|right, Direction(-4, -3), is_white);
+            moves |= king_eat_moves_in_direction(start, bottom|left, Direction(-5, -4), is_white);
         }
         return moves;
     }
