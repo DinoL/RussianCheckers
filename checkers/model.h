@@ -3,17 +3,20 @@
 
 #include <QObject>
 
+using state_t = uint32_t;
+
 class Direction
 {
 public:
-    using state_t = uint32_t;
-
-    int _even_step;
-    int _odd_step;
-
     const state_t _even = 0xf0f0f0f;
+    const state_t _border;
+    const int _even_step;
+    const int _odd_step;
 
-    Direction(int es, int os) : _even_step(es), _odd_step(os)
+    Direction(int es, int os, state_t border)
+        : _even_step(es)
+        , _odd_step(os)
+        , _border(border)
     {}
 
     bool up() const
@@ -29,6 +32,19 @@ public:
     state_t move(state_t s) const
     {
         return up() ? s << step(s) : s >> step(s);
+    }
+
+    state_t moves(state_t s) const
+    {
+        state_t res = 0;
+        state_t next = move(s);
+        while (s & ~_border)
+        {
+            res |= next;
+            s = next;
+            next = move(s);
+        }
+        return res;
     }
 };
 
@@ -127,10 +143,10 @@ public:
             state_t start = (1 << std::min(piece, cell));
             state_t end = (1 << std::max(piece, cell));
             state_t to_remove = ~(start | end) &
-                    (straight_moves_in_direction(start, top|right, Direction(4, 5)) &
-                     straight_moves_in_direction(end, bottom|left, Direction(-5, -4))) |
-                    (straight_moves_in_direction(start, top|left, Direction(3, 4)) &
-                     straight_moves_in_direction(end, bottom|right, Direction(-4, -3)));
+                    (straight_moves_in_direction(start, _top_right) &
+                     straight_moves_in_direction(end, _bottom_left)) |
+                    (straight_moves_in_direction(start, _top_left) &
+                     straight_moves_in_direction(end, _bottom_right));
 
             if (!_white_turn)
             {
@@ -233,11 +249,11 @@ private:
         return ~_white & ~_black & (next | kings_eat_moves);
     }
 
-    state_t straight_moves_in_direction(state_t s, state_t border, const Direction& dir) const
+    state_t straight_moves_in_direction(state_t s, const Direction& dir) const
     {
         state_t moves = 0;
         state_t next = dir.move(s);
-        while (s & ~border)
+        while (s & ~dir._border)
         {
             moves |= next;
             s = next;
@@ -246,13 +262,12 @@ private:
         return moves;
     }
 
-    state_t king_moves_in_direction(state_t s, state_t border, const Direction& dir) const
+    state_t king_moves_in_direction(state_t s, const Direction& dir) const
     {
         const state_t p = (_white | _black);
-
         state_t moves = 0;
         state_t next = dir.move(s);
-        while ((next & ~p) && (s & ~border))
+        while ((next & ~p) && (s & ~dir._border))
         {
             moves |= next;
             s = next;
@@ -263,10 +278,6 @@ private:
 
     state_t king_moves(state_t s) const
     {
-        const state_t bottom = 0xf;
-        const state_t left = 0x1010101;
-        const state_t right = 0x80808080;
-        const state_t top = 0xf0000000;
         state_t moves = 0;
 
         while (s)
@@ -274,22 +285,22 @@ private:
             state_t start = s & ~(s-1);
             s ^= start;
 
-            moves |= king_moves_in_direction(start, top|right, Direction(4, 5));
-            moves |= king_moves_in_direction(start, top|left, Direction(3, 4));
-            moves |= king_moves_in_direction(start, bottom|right, Direction(-4, -3));
-            moves |= king_moves_in_direction(start, bottom|left, Direction(-5, -4));
+            moves |= king_moves_in_direction(start, _top_right);
+            moves |= king_moves_in_direction(start, _top_left);
+            moves |= king_moves_in_direction(start, _bottom_right);
+            moves |= king_moves_in_direction(start, _bottom_left);
         }
         return moves;
     }
 
-    state_t king_eat_moves_in_direction(state_t s, state_t border, const Direction& dir, bool is_white) const
+    state_t king_eat_moves_in_direction(state_t s, const Direction& dir, bool is_white) const
     {
         const state_t p = (_white | _black);
         const state_t b = get_state(!is_white);
 
         state_t moves = 0;
         state_t next = dir.move(s);
-        while ((next & ~p) && (s & ~border))
+        while ((next & ~p) && (s & ~dir._border))
         {
             s = next;
             next = next = dir.move(s);
@@ -298,7 +309,7 @@ private:
         {
             s = next;
             next = next = dir.move(s);
-            while ((next & ~p) && (s & ~border))
+            while ((next & ~p) && (s & ~dir._border))
             {
                 moves |= next;
                 s = next;
@@ -310,10 +321,6 @@ private:
 
     state_t king_eat_moves(state_t s, bool is_white) const
     {
-        const state_t bottom = 0xf;
-        const state_t left = 0x1010101;
-        const state_t right = 0x80808080;
-        const state_t top = 0xf0000000;
         state_t moves = 0;
 
         while (s)
@@ -321,10 +328,10 @@ private:
             state_t start = s & ~(s-1);
             s ^= start;
 
-            moves |= king_eat_moves_in_direction(start, top|right, Direction(4, 5), is_white);
-            moves |= king_eat_moves_in_direction(start, top|left, Direction(3, 4), is_white);
-            moves |= king_eat_moves_in_direction(start, bottom|right, Direction(-4, -3), is_white);
-            moves |= king_eat_moves_in_direction(start, bottom|left, Direction(-5, -4), is_white);
+            moves |= king_eat_moves_in_direction(start, _top_right, is_white);
+            moves |= king_eat_moves_in_direction(start, _top_left, is_white);
+            moves |= king_eat_moves_in_direction(start, _bottom_right, is_white);
+            moves |= king_eat_moves_in_direction(start, _bottom_left, is_white);
         }
         return moves;
     }
@@ -388,6 +395,15 @@ private:
     bool _white_turn;
     int _eatingPiece;
     int _activePiece;
+
+    const state_t _bottom = 0xf;
+    const state_t _left = 0x1010101;
+    const state_t _right = 0x80808080;
+    const state_t _top = 0xf0000000;
+    const Direction _top_right = Direction(4, 5, _top|_right);
+    const Direction _top_left = Direction(3, 4, _top|_left);
+    const Direction _bottom_right = Direction(-4, -3, _bottom|_right);
+    const Direction _bottom_left = Direction(-5, -4, _bottom|_left);
 };
 
 #endif // MODEL_H
