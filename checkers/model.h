@@ -3,6 +3,35 @@
 
 #include <QObject>
 
+class Direction
+{
+public:
+    using state_t = uint32_t;
+
+    int _even_step;
+    int _odd_step;
+
+    const state_t _even = 0xf0f0f0f;
+
+    Direction(int es, int os) : _even_step(es), _odd_step(os)
+    {}
+
+    bool up() const
+    {
+        return _even_step > 0 && _odd_step > 0;
+    }
+
+    int step(state_t s) const
+    {
+        return (s & _even) ? abs(_even_step) : abs(_odd_step);
+    }
+
+    state_t move(state_t s) const
+    {
+        return up() ? s << step(s) : s >> step(s);
+    }
+};
+
 
 class MyModel : public QObject
 {
@@ -161,7 +190,9 @@ private:
     {
         const state_t next = is_white ? (s<<4)|((s&0xe0e0e0e)<<3)|((s&0x707070)<<5) :
                                         (s>>4)|((s&0xe0e0e0e)>>5)|((s&0x70707070)>>3);
-        return ~_white & ~_black & next;
+        state_t kings = is_white ? _white_kings : _black_kings;
+        const state_t kings_moves = king_moves(s & kings);
+        return ~_white & ~_black & (next | kings_moves);
     }
 
     state_t eat_moves(state_t s, bool is_white) const
@@ -177,6 +208,42 @@ private:
                 |((s&0x7070700&(b<<4))>>7)
                 |((s&0x70707000&(b<<3))>>7));
         return ~_white & ~_black & next;
+    }
+
+    state_t king_moves_in_direction(state_t s, state_t border, const Direction& dir) const
+    {
+        const state_t p = (_white | _black);
+
+        state_t moves = 0;
+        state_t next = dir.move(s);
+        while ((next & ~p) && (s & ~border))
+        {
+            moves |= next;
+            s = next;
+            next = next = dir.move(s);
+        }
+        return moves;
+    }
+
+    state_t king_moves(state_t s) const
+    {
+        const state_t bottom = 0xf;
+        const state_t left = 0x1010101;
+        const state_t right = 0x80808080;
+        const state_t top = 0xf0000000;
+        state_t moves = 0;
+
+        while (s)
+        {
+            state_t start = s & ~(s-1);
+            s ^= start;
+
+            moves |= king_moves_in_direction(start, top|right, Direction(4, 5));
+            moves |= king_moves_in_direction(start, top|left, Direction(3, 4));
+            moves |= king_moves_in_direction(start, bottom|right, Direction(-4, -3));
+            moves |= king_moves_in_direction(start, bottom|left, Direction(-5, -4));
+        }
+        return moves;
     }
 
     state_t moves(state_t s, bool is_white) const
