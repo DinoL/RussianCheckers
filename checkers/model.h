@@ -305,7 +305,7 @@ private:
             s = next;
             next = next = dir.move(s);
         }
-        if (next & b)
+        if ((s & ~dir._border) && (next & b))
         {
             s = next;
             next = next = dir.move(s);
