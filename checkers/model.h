@@ -337,17 +337,9 @@ private:
 
         if (eat_move)
         {
-            const state_t bottom = 0xf;
-            const state_t left = 0x1010101;
-            const state_t right = 0x80808080;
-            const state_t top = 0xf0000000;
-            state_t start = (1 << std::min(piece, cell));
-            state_t end = (1 << std::max(piece, cell));
-            state_t to_remove = ~(start | end) &
-                    (straight_moves_in_direction(start, _top_right) &
-                     straight_moves_in_direction(end, _bottom_left)) |
-                    (straight_moves_in_direction(start, _top_left) &
-                     straight_moves_in_direction(end, _bottom_right));
+            const state_t start = (1 << std::min(piece, cell));
+            const state_t end = (1 << std::max(piece, cell));
+            const state_t to_remove = get_between(start, end);
 
             if (!_white_turn)
             {
@@ -373,6 +365,15 @@ private:
             setActivePiece(-1);
             _eatingPiece = -1;
         }
+    }
+
+    state_t get_between(state_t start, state_t end) const
+    {
+        return ~(start | end) &
+                (straight_moves_in_direction(start, _top_right) &
+                 straight_moves_in_direction(end, _bottom_left)) |
+                (straight_moves_in_direction(start, _top_left) &
+                 straight_moves_in_direction(end, _bottom_right));
     }
 
     void reset()
