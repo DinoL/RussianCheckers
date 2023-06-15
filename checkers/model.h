@@ -430,10 +430,10 @@ private:
 
     void reset()
     {
-        _white = 0x2000;
-        _black = 0x500e00;
-        _white_kings = _white;
-        _black_kings = _black;
+        _white = 0xfff;
+        _black = 0xfff00000;
+        _white_kings = 0;
+        _black_kings = 0;
         _white_turn = true;
         _eatingPiece = -1;
         _activePiece = -1;
