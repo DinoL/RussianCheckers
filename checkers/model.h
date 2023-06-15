@@ -110,68 +110,7 @@ public:
         if (piece < 0)
             return;
 
-        const bool eat_move = current_eat_moves();
-
-        state_t a = get_state(_white_turn);
-        a = remove_piece(a, piece);
-        a = set_piece(a, cell);
-
-        state_t& kings = _white_turn ? _white_kings : _black_kings;
-        if (has_piece(kings, piece))
-        {
-            kings = remove_piece(kings, piece);
-            kings = set_piece(kings, cell);
-        }
-
-        bool become_king = (_white_turn && cell > 27) || (!_white_turn && cell < 4);
-        if (become_king)
-        {
-            kings = set_piece(kings, cell);
-        }
-
-        if (_white_turn)
-            _white = a;
-        else
-            _black = a;
-
-        if (eat_move)
-        {
-            const state_t bottom = 0xf;
-            const state_t left = 0x1010101;
-            const state_t right = 0x80808080;
-            const state_t top = 0xf0000000;
-            state_t start = (1 << std::min(piece, cell));
-            state_t end = (1 << std::max(piece, cell));
-            state_t to_remove = ~(start | end) &
-                    (straight_moves_in_direction(start, _top_right) &
-                     straight_moves_in_direction(end, _bottom_left)) |
-                    (straight_moves_in_direction(start, _top_left) &
-                     straight_moves_in_direction(end, _bottom_right));
-
-            if (!_white_turn)
-            {
-                _white &= ~to_remove;
-                _white_kings &= ~to_remove;
-            }
-            else
-            {
-                _black &= ~to_remove;
-                _black_kings &= ~to_remove;
-            }
-        }
-
-        bool can_eat_more = eat_moves(1 << cell, _white_turn);
-        if (eat_move && can_eat_more)
-        {
-            setActivePiece(cell);
-            _eatingPiece = cell;
-        }
-        else
-        {
-            switch_turn();
-            setActivePiece(-1);
-            _eatingPiece = -1;
-        }
+        move_piece(piece, cell);
     }
 
     Q_INVOKABLE bool piece_can_move_to(int piece, int cell) const
@@ -235,6 +174,10 @@ private:
     state_t eat_moves(state_t s, bool is_white) const
     {
         const state_t b = get_state(!is_white);
+        const state_t kings = is_white ? _white_kings : _black_kings;
+        const state_t kings_eat_moves = king_eat_moves(s & kings, b);
+
+        s &= ~kings;
         const state_t next =
                 (((s&0x70707&(b>>4))<<9)
                 |((s&0x707070&(b>>5))<<9)
@@ -244,9 +187,7 @@ private:
                 |((s&0xe0e0e00&(b<<5))>>9)
                 |((s&0x7070700&(b<<4))>>7)
                 |((s&0x70707000&(b<<3))>>7));
-        state_t kings = is_white ? _white_kings : _black_kings;
-        const state_t kings_eat_moves = king_eat_moves(s & kings, is_white);
-        return ~_white & ~_black & (next | kings_eat_moves);
+        return ~filled() & (next|kings_eat_moves);
     }
 
     state_t straight_moves_in_direction(state_t s, const Direction& dir) const
@@ -293,10 +234,10 @@ private:
         return moves;
     }
 
-    state_t king_eat_moves_in_direction(state_t s, const Direction& dir, bool is_white) const
+    state_t king_eat_moves_in_direction(state_t s, state_t opponent, state_t filled, const Direction& dir) const
     {
-        const state_t p = (_white | _black);
-        const state_t b = get_state(!is_white);
+        const state_t p = filled;
+        const state_t start = s;
 
         state_t moves = 0;
         state_t next = dir.move(s);
@@ -305,7 +246,7 @@ private:
             s = next;
             next = next = dir.move(s);
         }
-        if ((s & ~dir._border) && (next & b))
+        if ((s & ~dir._border) && (next & opponent))
         {
             s = next;
             next = next = dir.move(s);
@@ -316,10 +257,34 @@ private:
                 next = next = dir.move(s);
             }
         }
-        return moves;
+
+        state_t continuous_eat_moves = 0;
+        state_t moves_to_check = moves;
+        while (moves_to_check)
+        {
+            state_t end = moves_to_check & ~(moves_to_check - 1);
+            moves_to_check ^= end;
+
+            state_t opp = opponent;
+            state_t to_remove = (get_between(start, end) | get_between(end, start));
+            opp &= ~to_remove;
+
+            state_t filled_after_move = p;
+            filled_after_move &= ~to_remove;
+            filled_after_move &= ~start;
+            filled_after_move |= end;
+
+            bool can_continue = king_has_eat_moves(end, opp, filled_after_move);
+            if (can_continue)
+            {
+                continuous_eat_moves |= end;
+            }
+        }
+
+        return continuous_eat_moves ? continuous_eat_moves : moves;
     }
 
-    state_t king_eat_moves(state_t s, bool is_white) const
+    bool king_has_eat_moves(state_t s, state_t opponent, state_t filled) const
     {
         state_t moves = 0;
 
@@ -328,11 +293,31 @@ private:
             state_t start = s & ~(s-1);
             s ^= start;
 
-            moves |= king_eat_moves_in_direction(start, _top_right, is_white);
-            moves |= king_eat_moves_in_direction(start, _top_left, is_white);
-            moves |= king_eat_moves_in_direction(start, _bottom_right, is_white);
-            moves |= king_eat_moves_in_direction(start, _bottom_left, is_white);
+            moves |= king_eat_moves_in_direction(start, opponent, filled, _top_right);
+            moves |= king_eat_moves_in_direction(start, opponent, filled, _top_left);
+            moves |= king_eat_moves_in_direction(start, opponent, filled, _bottom_right);
+            moves |= king_eat_moves_in_direction(start, opponent, filled, _bottom_left);
         }
+
+        return moves;
+    }
+
+    state_t king_eat_moves(state_t s, state_t opponent) const
+    {
+        state_t moves = 0;
+        const state_t p = filled();
+
+        while (s)
+        {
+            state_t start = s & ~(s-1);
+            s ^= start;
+
+            moves |= king_eat_moves_in_direction(start, opponent, p, _top_right);
+            moves |= king_eat_moves_in_direction(start, opponent, p, _top_left);
+            moves |= king_eat_moves_in_direction(start, opponent, p, _bottom_right);
+            moves |= king_eat_moves_in_direction(start, opponent, p, _bottom_left);
+        }
+
         return moves;
     }
 
@@ -371,9 +356,76 @@ private:
         return s | (1 << cell);
     }
 
-    int get_center(int start, int end) const
+    void move_piece(int piece, int cell)
     {
-        return (start + end + (start / 4) % 2) / 2;
+        const bool eat_move = current_eat_moves();
+
+        state_t a = get_state(_white_turn);
+        a = remove_piece(a, piece);
+        a = set_piece(a, cell);
+
+        state_t& kings = _white_turn ? _white_kings : _black_kings;
+        if (has_piece(kings, piece))
+        {
+            kings = remove_piece(kings, piece);
+            kings = set_piece(kings, cell);
+        }
+
+        bool become_king = (_white_turn && cell > 27) || (!_white_turn && cell < 4);
+        if (become_king)
+        {
+            kings = set_piece(kings, cell);
+        }
+
+        if (_white_turn)
+            _white = a;
+        else
+            _black = a;
+
+        if (eat_move)
+        {
+            const state_t start = (1 << std::min(piece, cell));
+            const state_t end = (1 << std::max(piece, cell));
+            const state_t to_remove = get_between(start, end);
+
+            if (!_white_turn)
+            {
+                _white &= ~to_remove;
+                _white_kings &= ~to_remove;
+            }
+            else
+            {
+                _black &= ~to_remove;
+                _black_kings &= ~to_remove;
+            }
+        }
+
+        bool can_eat_more = eat_moves(1 << cell, _white_turn);
+        if (eat_move && can_eat_more)
+        {
+            setActivePiece(cell);
+            _eatingPiece = cell;
+        }
+        else
+        {
+            switch_turn();
+            setActivePiece(-1);
+            _eatingPiece = -1;
+        }
+    }
+
+    state_t get_between(state_t start, state_t end) const
+    {
+        return ~(start | end) &
+                (straight_moves_in_direction(start, _top_right) &
+                 straight_moves_in_direction(end, _bottom_left)) |
+                (straight_moves_in_direction(start, _top_left) &
+                 straight_moves_in_direction(end, _bottom_right));
+    }
+
+    state_t filled() const
+    {
+        return _white | _black;
     }
 
     void reset()
