@@ -174,12 +174,10 @@ private:
     state_t eat_moves(state_t s, bool is_white) const
     {
         const state_t b = get_state(!is_white);
-        state_t kings = is_white ? _white_kings : _black_kings;
-        if (s & kings)
-        {
-            const state_t kings_eat_moves = king_eat_moves(s & kings, b);
-            return ~filled() & kings_eat_moves;
-        }
+        const state_t kings = is_white ? _white_kings : _black_kings;
+        const state_t kings_eat_moves = king_eat_moves(s & kings, b);
+
+        s &= ~kings;
         const state_t next =
                 (((s&0x70707&(b>>4))<<9)
                 |((s&0x707070&(b>>5))<<9)
@@ -189,7 +187,7 @@ private:
                 |((s&0xe0e0e00&(b<<5))>>9)
                 |((s&0x7070700&(b<<4))>>7)
                 |((s&0x70707000&(b<<3))>>7));
-        return ~filled() & next;
+        return ~filled() & (next|kings_eat_moves);
     }
 
     state_t straight_moves_in_direction(state_t s, const Direction& dir) const
@@ -432,10 +430,10 @@ private:
 
     void reset()
     {
-        _white = 0xfff;
-        _black = 0xfff00000;
-        _white_kings = 0;
-        _black_kings = 0;
+        _white = 0x2000;
+        _black = 0x500e00;
+        _white_kings = _white;
+        _black_kings = _black;
         _white_turn = true;
         _eatingPiece = -1;
         _activePiece = -1;
