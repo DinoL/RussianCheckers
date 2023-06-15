@@ -97,7 +97,7 @@ ApplicationWindow {
                         height: width
                         color: {
                             var cur = board.curTurn
-                            Model.has_white_piece(index) ? "#eec" : "black"
+                            Model.has_white_piece(index) ? "blue" : "red"
                         }
                         border.color: "black"
 
