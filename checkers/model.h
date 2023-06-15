@@ -110,68 +110,7 @@ public:
         if (piece < 0)
             return;
 
-        const bool eat_move = current_eat_moves();
-
-        state_t a = get_state(_white_turn);
-        a = remove_piece(a, piece);
-        a = set_piece(a, cell);
-
-        state_t& kings = _white_turn ? _white_kings : _black_kings;
-        if (has_piece(kings, piece))
-        {
-            kings = remove_piece(kings, piece);
-            kings = set_piece(kings, cell);
-        }
-
-        bool become_king = (_white_turn && cell > 27) || (!_white_turn && cell < 4);
-        if (become_king)
-        {
-            kings = set_piece(kings, cell);
-        }
-
-        if (_white_turn)
-            _white = a;
-        else
-            _black = a;
-
-        if (eat_move)
-        {
-            const state_t bottom = 0xf;
-            const state_t left = 0x1010101;
-            const state_t right = 0x80808080;
-            const state_t top = 0xf0000000;
-            state_t start = (1 << std::min(piece, cell));
-            state_t end = (1 << std::max(piece, cell));
-            state_t to_remove = ~(start | end) &
-                    (straight_moves_in_direction(start, _top_right) &
-                     straight_moves_in_direction(end, _bottom_left)) |
-                    (straight_moves_in_direction(start, _top_left) &
-                     straight_moves_in_direction(end, _bottom_right));
-
-            if (!_white_turn)
-            {
-                _white &= ~to_remove;
-                _white_kings &= ~to_remove;
-            }
-            else
-            {
-                _black &= ~to_remove;
-                _black_kings &= ~to_remove;
-            }
-        }
-
-        bool can_eat_more = eat_moves(1 << cell, _white_turn);
-        if (eat_move && can_eat_more)
-        {
-            setActivePiece(cell);
-            _eatingPiece = cell;
-        }
-        else
-        {
-            switch_turn();
-            setActivePiece(-1);
-            _eatingPiece = -1;
-        }
+        move_piece(piece, cell);
     }
 
     Q_INVOKABLE bool piece_can_move_to(int piece, int cell) const
@@ -370,9 +309,70 @@ private:
         return s | (1 << cell);
     }
 
-    int get_center(int start, int end) const
+    void move_piece(int piece, int cell)
     {
-        return (start + end + (start / 4) % 2) / 2;
+        const bool eat_move = current_eat_moves();
+
+        state_t a = get_state(_white_turn);
+        a = remove_piece(a, piece);
+        a = set_piece(a, cell);
+
+        state_t& kings = _white_turn ? _white_kings : _black_kings;
+        if (has_piece(kings, piece))
+        {
+            kings = remove_piece(kings, piece);
+            kings = set_piece(kings, cell);
+        }
+
+        bool become_king = (_white_turn && cell > 27) || (!_white_turn && cell < 4);
+        if (become_king)
+        {
+            kings = set_piece(kings, cell);
+        }
+
+        if (_white_turn)
+            _white = a;
+        else
+            _black = a;
+
+        if (eat_move)
+        {
+            const state_t bottom = 0xf;
+            const state_t left = 0x1010101;
+            const state_t right = 0x80808080;
+            const state_t top = 0xf0000000;
+            state_t start = (1 << std::min(piece, cell));
+            state_t end = (1 << std::max(piece, cell));
+            state_t to_remove = ~(start | end) &
+                    (straight_moves_in_direction(start, _top_right) &
+                     straight_moves_in_direction(end, _bottom_left)) |
+                    (straight_moves_in_direction(start, _top_left) &
+                     straight_moves_in_direction(end, _bottom_right));
+
+            if (!_white_turn)
+            {
+                _white &= ~to_remove;
+                _white_kings &= ~to_remove;
+            }
+            else
+            {
+                _black &= ~to_remove;
+                _black_kings &= ~to_remove;
+            }
+        }
+
+        bool can_eat_more = eat_moves(1 << cell, _white_turn);
+        if (eat_move && can_eat_more)
+        {
+            setActivePiece(cell);
+            _eatingPiece = cell;
+        }
+        else
+        {
+            switch_turn();
+            setActivePiece(-1);
+            _eatingPiece = -1;
+        }
     }
 
     void reset()
