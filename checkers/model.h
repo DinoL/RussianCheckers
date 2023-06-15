@@ -245,7 +245,7 @@ private:
                 |((s&0x7070700&(b<<4))>>7)
                 |((s&0x70707000&(b<<3))>>7));
         state_t kings = is_white ? _white_kings : _black_kings;
-        const state_t kings_eat_moves = king_eat_moves(s & kings, is_white);
+        const state_t kings_eat_moves = king_eat_moves(s & kings, b);
         return ~_white & ~_black & (next | kings_eat_moves);
     }
 
@@ -293,10 +293,9 @@ private:
         return moves;
     }
 
-    state_t king_eat_moves_in_direction(state_t s, const Direction& dir, bool is_white) const
+    state_t king_eat_moves_in_direction(state_t s, state_t opponent, const Direction& dir) const
     {
         const state_t p = (_white | _black);
-        const state_t b = get_state(!is_white);
 
         state_t moves = 0;
         state_t next = dir.move(s);
@@ -305,7 +304,7 @@ private:
             s = next;
             next = next = dir.move(s);
         }
-        if ((s & ~dir._border) && (next & b))
+        if ((s & ~dir._border) && (next & opponent))
         {
             s = next;
             next = next = dir.move(s);
@@ -319,7 +318,7 @@ private:
         return moves;
     }
 
-    state_t king_eat_moves(state_t s, bool is_white) const
+    state_t king_eat_moves(state_t s, state_t opponent) const
     {
         state_t moves = 0;
 
@@ -328,10 +327,10 @@ private:
             state_t start = s & ~(s-1);
             s ^= start;
 
-            moves |= king_eat_moves_in_direction(start, _top_right, is_white);
-            moves |= king_eat_moves_in_direction(start, _top_left, is_white);
-            moves |= king_eat_moves_in_direction(start, _bottom_right, is_white);
-            moves |= king_eat_moves_in_direction(start, _bottom_left, is_white);
+            moves |= king_eat_moves_in_direction(start, opponent, _top_right);
+            moves |= king_eat_moves_in_direction(start, opponent, _top_left);
+            moves |= king_eat_moves_in_direction(start, opponent, _bottom_right);
+            moves |= king_eat_moves_in_direction(start, opponent, _bottom_left);
         }
         return moves;
     }
