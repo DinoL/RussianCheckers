@@ -2,7 +2,8 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include <model.h>
+#include "model.h"
+
 
 int main(int argc, char *argv[])
 {
@@ -10,12 +11,18 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
+    const QUrl url(u"RussianCheckers/main.qml"_qs);
 
     MyModel *model = new MyModel(&app);
     engine.rootContext()->setContextProperty("Model", model);
-    //qmlRegisterType<MyModel>("MyModel", 1, 0, "MyModel");
 
-    engine.load(QUrl(QLatin1String("qrc:/main.qml")));
+    QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
+        &app, [url](QObject *obj, const QUrl &objUrl) {
+            if (!obj && url == objUrl)
+                QCoreApplication::exit(-1);
+        }, Qt::QueuedConnection);
+
+    engine.load(url);
 
     return app.exec();
 }
