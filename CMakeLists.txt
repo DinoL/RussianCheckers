@@ -16,6 +16,10 @@ set(SRC_FILES
     ${SRC_DIR}/main.cpp
     ${SRC_DIR}/model.cpp
     ${INCLUDE_DIR}/model.h
+    ${SRC_DIR}/checkerslogic.cpp
+    ${INCLUDE_DIR}/checkerslogic.h
+    ${SRC_DIR}/direction.cpp
+    ${INCLUDE_DIR}/direction.h
 )
 
 qt_add_executable(appRussianCheckers ${SRC_FILES})

@@ -1,45 +1,18 @@
-#ifndef MODEL_H
-#define MODEL_H
+#ifndef CHECKERSLOGIC_H
+#define CHECKERSLOGIC_H
 
-#include <QObject>
+#include <cstdint>
+#include <algorithm>
 
 #include "direction.h"
 
 using state_t = uint32_t;
 
-class MyModel : public QObject
+class CheckersLogic
 {
-    Q_OBJECT
-    Q_PROPERTY(int activePiece READ activePiece WRITE setActivePiece NOTIFY onActivePieceChange)
-    Q_PROPERTY(bool whiteTurn READ whiteTurn WRITE setWhiteTurn NOTIFY onTurnChange)
 public:
-    using state_t = uint32_t;
+    CheckersLogic();
 
-    MyModel(QObject* parent = nullptr);
-
-    Q_INVOKABLE bool is_king(int cell) const;
-    Q_INVOKABLE void restart();
-    Q_INVOKABLE bool has_any_piece(int cell) const;
-    Q_INVOKABLE bool has_white_piece(int cell) const;
-    Q_INVOKABLE bool has_black_piece(int cell) const;
-    Q_INVOKABLE bool can_move_from(int cell) const;
-    Q_INVOKABLE bool has_movable_fields() const;
-    Q_INVOKABLE bool can_move_to(int cell) const;
-    Q_INVOKABLE void move_piece_to(int cell);
-    Q_INVOKABLE bool piece_can_move_to(int piece, int cell) const;
-    Q_INVOKABLE int activePiece() const;
-    Q_INVOKABLE bool whiteTurn() const;
-
-public slots:
-    Q_INVOKABLE void setActivePiece(int i_activePiece);
-
-    void setWhiteTurn(bool whiteTurn);
-
-signals:
-    void onActivePieceChange(int activePiece);
-    void onTurnChange(bool whiteTurn);
-
-private:
     void switch_turn()
     {
         _white_turn = !_white_turn;
@@ -53,7 +26,7 @@ private:
     state_t step_moves(state_t s, bool is_white) const
     {
         const state_t next = is_white ? (s<<4)|((s&0xe0e0e0e)<<3)|((s&0x707070)<<5) :
-                                        (s>>4)|((s&0xe0e0e0e)>>5)|((s&0x70707070)>>3);
+                                 (s>>4)|((s&0xe0e0e0e)>>5)|((s&0x70707070)>>3);
         state_t kings = is_white ? _white_kings : _black_kings;
         const state_t kings_moves = king_moves(s & kings);
         return ~_white & ~_black & (next | kings_moves);
@@ -67,14 +40,14 @@ private:
 
         s &= ~kings;
         const state_t next =
-                (((s&0x70707&(b>>4))<<9)
-                |((s&0x707070&(b>>5))<<9)
-                |((s&0xe0e0e0&(b>>4))<<7)
-                |((s&0xe0e0e&(b>>3))<<7)
-                |((s&0xe0e0e000&(b<<4))>>9)
-                |((s&0xe0e0e00&(b<<5))>>9)
-                |((s&0x7070700&(b<<4))>>7)
-                |((s&0x70707000&(b<<3))>>7));
+            (((s&0x70707&(b>>4))<<9)
+             |((s&0x707070&(b>>5))<<9)
+             |((s&0xe0e0e0&(b>>4))<<7)
+             |((s&0xe0e0e&(b>>3))<<7)
+             |((s&0xe0e0e000&(b<<4))>>9)
+             |((s&0xe0e0e00&(b<<5))>>9)
+             |((s&0x7070700&(b<<4))>>7)
+             |((s&0x70707000&(b<<3))>>7));
         return ~filled() & (next|kings_eat_moves);
     }
 
@@ -216,7 +189,7 @@ private:
             return eat_moves(s & (1 << _eatingPiece), is_white);
         }
         return current_eat_moves() ?  eat_moves(s, is_white) :
-                                      step_moves(s, is_white);
+                   step_moves(s, is_white);
     }
 
     state_t current_moves() const
@@ -291,13 +264,13 @@ private:
         bool can_eat_more = eat_moves(1 << cell, _white_turn);
         if (eat_move && can_eat_more)
         {
-            setActivePiece(cell);
+            _activePiece = cell;
             _eatingPiece = cell;
         }
         else
         {
             switch_turn();
-            setActivePiece(-1);
+            _activePiece = -1;
             _eatingPiece = -1;
         }
     }
@@ -305,10 +278,10 @@ private:
     state_t get_between(state_t start, state_t end) const
     {
         return ~(start | end) &
-                (straight_moves_in_direction(start, _top_right) &
-                 straight_moves_in_direction(end, _bottom_left)) |
-                (straight_moves_in_direction(start, _top_left) &
-                 straight_moves_in_direction(end, _bottom_right));
+                   (straight_moves_in_direction(start, _top_right) &
+                    straight_moves_in_direction(end, _bottom_left)) |
+               (straight_moves_in_direction(start, _top_left) &
+                straight_moves_in_direction(end, _bottom_right));
     }
 
     state_t filled() const
@@ -346,4 +319,4 @@ private:
     const Direction _bottom_left = Direction(-5, -4, _bottom|_left);
 };
 
-#endif // MODEL_H
+#endif // CHECKERSLOGIC_H
