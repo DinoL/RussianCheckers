@@ -1,1 +1,2 @@
-checkers/checkers.pro.user
+checkers/*.user
+build-*
