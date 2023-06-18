@@ -18,9 +18,19 @@ public:
         _white_turn = !_white_turn;
     }
 
+    bool is_white_turn() const
+    {
+        return _white_turn;
+    }
+
     state_t get_state(bool is_white) const
     {
         return is_white ? _white : _black;
+    }
+
+    state_t get_kings_state(bool is_white) const
+    {
+        return is_white ? _white_kings : _black_kings;
     }
 
     state_t step_moves(state_t s, bool is_white) const
@@ -298,6 +308,11 @@ public:
         _white_turn = true;
         _eatingPiece = -1;
         _activePiece = -1;
+    }
+
+    int active_piece() const
+    {
+        return _activePiece;
     }
 
 private:
