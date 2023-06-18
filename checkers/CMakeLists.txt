@@ -8,11 +8,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt6 6.2 REQUIRED COMPONENTS Quick)
 
 qt_add_executable(appRussianCheckers
+    model.cpp model.h
     main.cpp
-)
-
-target_sources(appRussianCheckers
-    PUBLIC model.cpp
 )
 
 qt_add_qml_module(appRussianCheckers
