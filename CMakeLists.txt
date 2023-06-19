@@ -18,6 +18,9 @@ set(COMMON_FILES
     ${INCLUDE_DIR}/checkerslogic.h
     ${SRC_DIR}/direction.cpp
     ${INCLUDE_DIR}/direction.h
+    ${SRC_DIR}/constants.cpp
+    ${INCLUDE_DIR}/constants.h
+    ${INCLUDE_DIR}/defines.h
 )
 
 set(APP_FILES
