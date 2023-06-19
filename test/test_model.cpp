@@ -1,7 +1,9 @@
 #include <iostream>
 #include <gtest/gtest.h>
 
+#include "checkerslogic.h"
 
-TEST(MockTest, AlwaysTrue) {
-    EXPECT_TRUE(true);
+TEST(CheckersLogicTests, WhiteTurnFirst) {
+    CheckersLogic logic;
+    EXPECT_TRUE(logic.is_white_turn());
 }
