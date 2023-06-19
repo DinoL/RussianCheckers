@@ -1,4 +1,5 @@
 #include "model.h"
+#include "bit_algo.h"
 
 MyModel::MyModel(QObject* parent)
 {
@@ -8,8 +9,8 @@ MyModel::MyModel(QObject* parent)
 
 bool MyModel::is_king(int cell) const
 {
-    return _logic.has_piece(_logic.get_kings_state(true), cell) ||
-           _logic.has_piece(_logic.get_kings_state(false), cell);
+    return alg::has_piece(_logic.get_kings_state(true), cell) ||
+           alg::has_piece(_logic.get_kings_state(false), cell);
 }
 
 void MyModel::restart()
@@ -26,17 +27,17 @@ bool MyModel::has_any_piece(int cell) const
 
 bool MyModel::has_white_piece(int cell) const
 {
-    return _logic.has_piece(_logic.get_state(true), cell);
+    return alg::has_piece(_logic.get_state(true), cell);
 }
 
 bool MyModel::has_black_piece(int cell) const
 {
-    return _logic.has_piece(_logic.get_state(false), cell);
+    return alg::has_piece(_logic.get_state(false), cell);
 }
 
 bool MyModel::can_move_from(int cell) const
 {
-    return _logic.has_piece(_logic.get_state(_logic.is_white_turn()), cell) &&
+    return alg::has_piece(_logic.get_state(_logic.is_white_turn()), cell) &&
            (_logic.moves((1 << cell), _logic.is_white_turn()) != 0);
 }
 

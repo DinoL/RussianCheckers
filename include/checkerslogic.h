@@ -39,9 +39,6 @@ public:
     // static
     static state_t get_between(state_t start, state_t end);
     static state_t straight_moves_in_direction(state_t s, const Direction& dir);
-    static bool has_piece(state_t s, int cell);
-    static state_t remove_piece(state_t s, int cell);
-    static state_t set_piece(state_t s, int cell);
 
 private:
     state_t _white;

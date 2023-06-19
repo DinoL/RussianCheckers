@@ -1,4 +1,5 @@
 #include "checkerslogic.h"
+#include "bit_algo.h"
 
 CheckersLogic::CheckersLogic()
 {
@@ -204,40 +205,25 @@ state_t CheckersLogic::current_eat_moves() const
     return eat_moves(get_state(_white_turn), _white_turn);
 }
 
-bool CheckersLogic::has_piece(state_t s, int cell)
-{
-    return s & (1 << cell);
-}
-
-state_t CheckersLogic::remove_piece(state_t s, int cell)
-{
-    return s & ~(1 << cell);
-}
-
-state_t CheckersLogic::set_piece(state_t s, int cell)
-{
-    return s | (1 << cell);
-}
-
 void CheckersLogic::move_piece(int piece, int cell)
 {
     const bool eat_move = current_eat_moves();
 
     state_t a = get_state(_white_turn);
-    a = remove_piece(a, piece);
-    a = set_piece(a, cell);
+    a = alg::remove_piece(a, piece);
+    a = alg::set_piece(a, cell);
 
     state_t& kings = _white_turn ? _white_kings : _black_kings;
-    if (has_piece(kings, piece))
+    if (alg::has_piece(kings, piece))
     {
-        kings = remove_piece(kings, piece);
-        kings = set_piece(kings, cell);
+        kings = alg::remove_piece(kings, piece);
+        kings = alg::set_piece(kings, cell);
     }
 
     bool become_king = (_white_turn && cell > 27) || (!_white_turn && cell < 4);
     if (become_king)
     {
-        kings = set_piece(kings, cell);
+        kings = alg::set_piece(kings, cell);
     }
 
     if (_white_turn)

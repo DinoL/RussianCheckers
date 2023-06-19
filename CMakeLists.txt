@@ -21,6 +21,8 @@ set(COMMON_FILES
     ${SRC_DIR}/constants.cpp
     ${INCLUDE_DIR}/constants.h
     ${INCLUDE_DIR}/defines.h
+    ${SRC_DIR}/bit_algo.cpp
+    ${INCLUDE_DIR}/bit_algo.h
 )
 
 set(APP_FILES
@@ -62,7 +64,10 @@ add_subdirectory(./googletest)
 enable_testing()
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-add_executable(runUnitTests ${TEST_DIR}/test_model.cpp)
+add_executable(runUnitTests
+    ${TEST_DIR}/test_logic.cpp
+    ${TEST_DIR}/test_bit_algo.cpp
+)
 target_link_libraries(runUnitTests gtest gtest_main checkersLibrary)
 
 add_test(UnitTests runUnitTests)
