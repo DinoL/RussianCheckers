@@ -29,9 +29,8 @@ state_t CheckersLogic::step_moves(state_t s, bool is_white) const
 {
     const state_t next = is_white ? (s<<4)|((s&0xe0e0e0e)<<3)|((s&0x707070)<<5) :
                                     (s>>4)|((s&0xe0e0e0e)>>5)|((s&0x70707070)>>3);
-    state_t kings = is_white ? _white_kings : _black_kings;
-    const state_t kings_moves = king_moves(s & kings);
-    return ~_white & ~_black & (next | kings_moves);
+    const state_t king_moves = king_step_moves(s & get_kings_state(is_white));
+    return ~_white & ~_black & (next | king_moves);
 }
 
 state_t CheckersLogic::eat_moves(state_t s, bool is_white) const
@@ -66,9 +65,9 @@ state_t CheckersLogic::straight_moves_in_direction(state_t s, const Direction& d
     return moves;
 }
 
-state_t CheckersLogic::king_moves_in_direction(state_t s, const Direction& dir) const
+state_t CheckersLogic::king_step_moves_in_direction(state_t s, const Direction& dir) const
 {
-    const state_t p = (_white | _black);
+    const state_t p = filled();
     state_t moves = 0;
     state_t next = dir.move(s);
     while ((next & ~p) && (s & ~dir._border))
@@ -80,7 +79,7 @@ state_t CheckersLogic::king_moves_in_direction(state_t s, const Direction& dir) 
     return moves;
 }
 
-state_t CheckersLogic::king_moves(state_t s) const
+state_t CheckersLogic::king_step_moves(state_t s) const
 {
     state_t moves = 0;
 
@@ -89,10 +88,10 @@ state_t CheckersLogic::king_moves(state_t s) const
         state_t start = s & ~(s-1);
         s ^= start;
 
-        moves |= king_moves_in_direction(start, Direction::top_right());
-        moves |= king_moves_in_direction(start, Direction::bottom_left());
-        moves |= king_moves_in_direction(start, Direction::top_left());
-        moves |= king_moves_in_direction(start, Direction::bottom_right());
+        moves |= king_step_moves_in_direction(start, Direction::top_right());
+        moves |= king_step_moves_in_direction(start, Direction::bottom_left());
+        moves |= king_step_moves_in_direction(start, Direction::top_left());
+        moves |= king_step_moves_in_direction(start, Direction::bottom_right());
     }
     return moves;
 }
@@ -190,7 +189,8 @@ state_t CheckersLogic::moves(state_t s, bool is_white) const
     {
         return eat_moves(s & (1 << _eatingPiece), is_white);
     }
-    return current_eat_moves() ?  eat_moves(s, is_white) :
+    return current_eat_moves() ?
+               eat_moves(s, is_white) :
                step_moves(s, is_white);
 }
 
@@ -204,17 +204,17 @@ state_t CheckersLogic::current_eat_moves() const
     return eat_moves(get_state(_white_turn), _white_turn);
 }
 
-bool CheckersLogic::has_piece(state_t s, int cell) const
+bool CheckersLogic::has_piece(state_t s, int cell)
 {
     return s & (1 << cell);
 }
 
-state_t CheckersLogic::remove_piece(state_t s, int cell) const
+state_t CheckersLogic::remove_piece(state_t s, int cell)
 {
     return s & ~(1 << cell);
 }
 
-state_t CheckersLogic::set_piece(state_t s, int cell) const
+state_t CheckersLogic::set_piece(state_t s, int cell)
 {
     return s | (1 << cell);
 }

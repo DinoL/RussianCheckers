@@ -17,19 +17,17 @@ public:
     void reset();
     void move_piece(int piece, int cell);
 
+    // queries
+    state_t moves(state_t s, bool is_white) const;
     state_t step_moves(state_t s, bool is_white) const;
     state_t eat_moves(state_t s, bool is_white) const;
-    state_t king_moves_in_direction(state_t s, const Direction& dir) const;
-    state_t king_moves(state_t s) const;
+    state_t current_moves() const;
+    state_t current_eat_moves() const;
+    state_t king_step_moves_in_direction(state_t s, const Direction& dir) const;
+    state_t king_step_moves(state_t s) const;
     state_t king_eat_moves_in_direction(state_t s, state_t opponent, state_t filled, const Direction& dir) const;
     bool king_has_eat_moves(state_t s, state_t opponent, state_t filled) const;
     state_t king_eat_moves(state_t s, state_t opponent) const;
-    state_t moves(state_t s, bool is_white) const;
-    state_t current_moves() const;
-    state_t current_eat_moves() const;
-    bool has_piece(state_t s, int cell) const;
-    state_t remove_piece(state_t s, int cell) const;
-    state_t set_piece(state_t s, int cell) const;
     state_t filled() const;
 
     // getters
@@ -41,6 +39,9 @@ public:
     // static
     static state_t get_between(state_t start, state_t end);
     static state_t straight_moves_in_direction(state_t s, const Direction& dir);
+    static bool has_piece(state_t s, int cell);
+    static state_t remove_piece(state_t s, int cell);
+    static state_t set_piece(state_t s, int cell);
 
 private:
     state_t _white;
