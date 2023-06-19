@@ -10,6 +10,9 @@ namespace constants
     static constexpr const state_t LEFT = 0x1010101;
     static constexpr const state_t RIGHT = 0x80808080;
     static constexpr const state_t TOP = 0xf0000000;
+
+    static constexpr const state_t WHITE_START = 0xfff;
+    static constexpr const state_t BLACK_START = 0xfff00000;
 }
 
 #endif // CONSTANTS_H

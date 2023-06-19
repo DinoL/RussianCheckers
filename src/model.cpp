@@ -38,7 +38,7 @@ bool MyModel::has_black_piece(int cell) const
 bool MyModel::can_move_from(int cell) const
 {
     return alg::has_piece(_logic.get_state(_logic.is_white_turn()), cell) &&
-           (_logic.moves((1 << cell), _logic.is_white_turn()) != 0);
+           (_logic.moves(alg::to_state(cell), _logic.is_white_turn()) != 0);
 }
 
 bool MyModel::has_movable_fields() const
@@ -48,7 +48,7 @@ bool MyModel::has_movable_fields() const
 
 bool MyModel::can_move_to(int cell) const
 {
-    return _logic.current_moves() & (1 << cell);
+    return _logic.current_moves() & alg::to_state(cell);
 }
 
 void MyModel::move_piece_to(int cell)
@@ -64,7 +64,7 @@ void MyModel::move_piece_to(int cell)
 
 bool MyModel::piece_can_move_to(int piece, int cell) const
 {
-    return _logic.moves((1 << piece), _logic.is_white_turn()) & (1 << cell);
+    return _logic.moves(alg::to_state(piece), _logic.is_white_turn()) & alg::to_state(cell);
 }
 
 int MyModel::activePiece() const
