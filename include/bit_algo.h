@@ -10,7 +10,7 @@ namespace alg
     state_t remove_piece(state_t s, int cell);
     state_t set_piece(state_t s, int cell);
     state_t to_state(int cell);
-    state_t last_set_piece(state_t s);
+    state_t first_set_piece(state_t s);
 
 }
 

@@ -23,9 +23,9 @@ namespace alg
         return 1 << cell;
     }
 
-    state_t last_set_piece(state_t s)
+    state_t first_set_piece(state_t s)
     {
-        return s;
+        return s & ~(s-1);
     }
 
 }
