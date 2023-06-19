@@ -13,17 +13,20 @@ set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
 set(TEST_DIR ${PROJECT_SOURCE_DIR}/test)
 include_directories(${INCLUDE_DIR})
 
-set(SRC_FILES
-    ${SRC_DIR}/main.cpp
-    ${SRC_DIR}/model.cpp
-    ${INCLUDE_DIR}/model.h
+set(COMMON_FILES
     ${SRC_DIR}/checkerslogic.cpp
     ${INCLUDE_DIR}/checkerslogic.h
     ${SRC_DIR}/direction.cpp
     ${INCLUDE_DIR}/direction.h
 )
 
-qt_add_executable(appRussianCheckers ${SRC_FILES})
+set(APP_FILES
+    ${SRC_DIR}/main.cpp
+    ${SRC_DIR}/model.cpp
+    ${INCLUDE_DIR}/model.h
+)
+
+qt_add_executable(appRussianCheckers ${APP_FILES} ${COMMON_FILES})
 qt_add_qml_module(appRussianCheckers
     URI RussianCheckers
     VERSION 1.0
@@ -53,7 +56,7 @@ add_subdirectory(./googletest)
 enable_testing()
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-add_executable(runUnitTests ${TEST_DIR}/test_model.cpp)
+add_executable(runUnitTests ${TEST_DIR}/test_model.cpp ${COMMON_FILES})
 target_link_libraries(runUnitTests gtest gtest_main)
 
 add_test(UnitTests runUnitTests)
