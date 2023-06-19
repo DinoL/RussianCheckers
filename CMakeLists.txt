@@ -26,7 +26,9 @@ set(APP_FILES
     ${INCLUDE_DIR}/model.h
 )
 
-qt_add_executable(appRussianCheckers ${APP_FILES} ${COMMON_FILES})
+add_library(checkersLibrary ${COMMON_FILES})
+
+qt_add_executable(appRussianCheckers ${APP_FILES})
 qt_add_qml_module(appRussianCheckers
     URI RussianCheckers
     VERSION 1.0
@@ -44,6 +46,7 @@ set_target_properties(appRussianCheckers PROPERTIES
 
 target_link_libraries(appRussianCheckers
     PRIVATE Qt6::Quick
+    PUBLIC checkersLibrary
 )
 
 install(TARGETS appRussianCheckers
@@ -56,7 +59,7 @@ add_subdirectory(./googletest)
 enable_testing()
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-add_executable(runUnitTests ${TEST_DIR}/test_model.cpp ${COMMON_FILES})
-target_link_libraries(runUnitTests gtest gtest_main)
+add_executable(runUnitTests ${TEST_DIR}/test_model.cpp)
+target_link_libraries(runUnitTests gtest gtest_main checkersLibrary)
 
 add_test(UnitTests runUnitTests)
