@@ -10,6 +10,7 @@ find_package(Qt6 6.2 REQUIRED COMPONENTS Quick)
 
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
+set(TEST_DIR ${PROJECT_SOURCE_DIR}/test)
 include_directories(${INCLUDE_DIR})
 
 set(SRC_FILES
@@ -47,3 +48,12 @@ install(TARGETS appRussianCheckers
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+add_subdirectory(./googletest)
+enable_testing()
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+
+add_executable(runUnitTests ${TEST_DIR}/test_model.cpp)
+target_link_libraries(runUnitTests gtest gtest_main)
+
+add_test(UnitTests runUnitTests)
