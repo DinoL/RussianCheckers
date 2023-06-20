@@ -12,3 +12,8 @@ TEST(DirectionTests, AllMoves)
     EXPECT_EQ(Direction::bottom_right().all_moves(s), 0x08c8803e);
     EXPECT_EQ(Direction::bottom_left().all_moves(s), 0x04663315);
 }
+
+TEST(DirectionTests, TestFail)
+{
+    EXPECT_TRUE(false);
+}
