@@ -165,27 +165,19 @@ void CheckersLogic::move_piece(int piece, int cell)
 {
     const bool eat_move = current_eat_moves();
 
-    state_t a = get_state(_white_turn);
-    a = alg::remove_piece(a, piece);
-    a = alg::set_piece(a, cell);
+    _white = alg::move_piece(_white, piece, cell);
+    _black = alg::move_piece(_black, piece, cell);
+    _white_kings = alg::move_piece(_white_kings, piece, cell);
+    _black_kings = alg::move_piece(_black_kings, piece, cell);
 
-    state_t& kings = _white_turn ? _white_kings : _black_kings;
-    if (alg::has_piece(kings, piece))
+    if (_white_turn && cell > 27)
     {
-        kings = alg::remove_piece(kings, piece);
-        kings = alg::set_piece(kings, cell);
+        _white_kings = alg::set_piece(_white_kings, cell);
     }
-
-    bool become_king = (_white_turn && cell > 27) || (!_white_turn && cell < 4);
-    if (become_king)
+    if (!_white_turn && cell < 4)
     {
-        kings = alg::set_piece(kings, cell);
+        _black_kings = alg::set_piece(_black_kings, cell);
     }
-
-    if (_white_turn)
-        _white = a;
-    else
-        _black = a;
 
     if (eat_move)
     {
@@ -195,7 +187,7 @@ void CheckersLogic::move_piece(int piece, int cell)
         clear_cells(to_remove);
     }
 
-    bool can_eat_more = eat_moves(alg::to_state(cell), _white_turn);
+    const bool can_eat_more = eat_moves(alg::to_state(cell), _white_turn);
     if (eat_move && can_eat_more)
     {
         _activePiece = cell;
