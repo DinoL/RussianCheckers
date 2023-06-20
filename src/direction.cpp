@@ -45,6 +45,37 @@ state_t Direction::free_moves(state_t s, state_t p) const
     return res;
 }
 
+state_t Direction::eat_moves(state_t s, state_t b, state_t p) const
+{
+    state_t res = 0;
+
+    while (s)
+    {
+        state_t cur = alg::first_set_piece(s);
+        s ^= cur;
+
+        state_t next = move(cur);
+        while ((next & ~p) && (cur & ~_border))
+        {
+            cur = next;
+            next = move(cur);
+        }
+        if ((cur & ~_border) && (next & b))
+        {
+            cur = next;
+            next = move(cur);
+            while ((cur & ~_border) && (next & ~p))
+            {
+                res |= next;
+                cur = next;
+                next = move(cur);
+            }
+        }
+    }
+
+    return res;
+}
+
 state_t Direction::all_moves(state_t s) const
 {
     state_t res = 0;

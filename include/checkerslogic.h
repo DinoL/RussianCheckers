@@ -25,8 +25,9 @@ public:
     state_t current_moves() const;
     state_t current_eat_moves() const;
     state_t king_step_moves(state_t s) const;
-    state_t king_eat_moves_in_direction(state_t s, state_t opponent, state_t filled, const Direction& dir) const;
-    state_t king_eat_moves(state_t s, state_t opponent, state_t filled) const;
+    state_t king_eat_moves_in_direction(state_t s, state_t b, state_t p, const Direction& dir) const;
+    state_t king_eat_moves_unfiltered(state_t s, state_t b, state_t p) const;
+    state_t king_eat_moves(state_t s, state_t b, state_t p) const;
     state_t filled() const;
 
     // getters

@@ -64,55 +64,35 @@ state_t CheckersLogic::eat_moves(state_t s, bool is_white) const
 
 state_t CheckersLogic::king_step_moves(state_t s) const
 {
-    state_t p = filled();
-
+    const state_t p = filled();
     return Direction::top_right().free_moves(s, p)
          | Direction::bottom_left().free_moves(s, p)
          | Direction::top_left().free_moves(s, p)
          | Direction::bottom_right().free_moves(s, p);
 }
 
-state_t CheckersLogic::king_eat_moves_in_direction(state_t s, state_t opponent, state_t filled, const Direction& dir) const
+state_t CheckersLogic::king_eat_moves_in_direction(state_t s, state_t b, state_t p, const Direction& dir) const
 {
-    const state_t p = filled;
-    const state_t start = s;
-
-    state_t moves = 0;
-    state_t next = dir.move(s);
-    while ((next & ~p) && (s & ~dir._border))
-    {
-        s = next;
-        next = dir.move(s);
-    }
-    if ((s & ~dir._border) && (next & opponent))
-    {
-        s = next;
-        next = dir.move(s);
-        while ((next & ~p) && (s & ~dir._border))
-        {
-            moves |= next;
-            s = next;
-            next = dir.move(s);
-        }
-    }
-
-    state_t continuous_eat_moves = 0;
+    const state_t moves = dir.eat_moves(s, b, p);
     state_t moves_to_check = moves;
+    state_t continuous_eat_moves = 0;
+
     while (moves_to_check)
     {
         state_t end = alg::first_set_piece(moves_to_check);
         moves_to_check ^= end;
 
-        state_t opp = opponent;
-        state_t to_remove = (get_between(start, end) | get_between(end, start));
-        opp &= ~to_remove;
+        state_t b2 = b;
+        state_t to_remove = (get_between(s, end)
+                           | get_between(end, s));
+        b2 &= ~to_remove;
 
-        state_t filled_after_move = p;
-        filled_after_move &= ~to_remove;
-        filled_after_move &= ~start;
-        filled_after_move |= end;
+        state_t p2 = p;
+        p2 &= ~to_remove;
+        p2 &= ~s;
+        p2 |= end;
 
-        bool can_continue = (king_eat_moves(end, opp, filled_after_move) != 0);
+        const bool can_continue = (king_eat_moves_unfiltered(end, b2, p2) != 0);
         if (can_continue)
         {
             continuous_eat_moves |= end;
@@ -122,7 +102,15 @@ state_t CheckersLogic::king_eat_moves_in_direction(state_t s, state_t opponent, 
     return continuous_eat_moves ? continuous_eat_moves : moves;
 }
 
-state_t CheckersLogic::king_eat_moves(state_t s, state_t opponent, state_t filled) const
+state_t CheckersLogic::king_eat_moves_unfiltered(state_t s, state_t b, state_t p) const
+{
+    return Direction::top_right().eat_moves(s, b, p)
+         | Direction::bottom_left().eat_moves(s, b, p)
+         | Direction::top_left().eat_moves(s, b, p)
+         | Direction::bottom_right().eat_moves(s, b, p);
+}
+
+state_t CheckersLogic::king_eat_moves(state_t s, state_t b, state_t p) const
 {
     state_t moves = 0;
 
@@ -131,10 +119,10 @@ state_t CheckersLogic::king_eat_moves(state_t s, state_t opponent, state_t fille
         state_t start = alg::first_set_piece(s);
         s ^= start;
 
-        moves |= king_eat_moves_in_direction(start, opponent, filled, Direction::top_right());
-        moves |= king_eat_moves_in_direction(start, opponent, filled, Direction::bottom_left());
-        moves |= king_eat_moves_in_direction(start, opponent, filled, Direction::top_left());
-        moves |= king_eat_moves_in_direction(start, opponent, filled, Direction::bottom_right());
+        moves |= king_eat_moves_in_direction(start, b, p, Direction::top_right());
+        moves |= king_eat_moves_in_direction(start, b, p, Direction::bottom_left());
+        moves |= king_eat_moves_in_direction(start, b, p, Direction::top_left());
+        moves |= king_eat_moves_in_direction(start, b, p, Direction::bottom_right());
     }
 
     return moves;
