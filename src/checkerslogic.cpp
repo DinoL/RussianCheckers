@@ -65,12 +65,19 @@ state_t CheckersLogic::eat_moves(state_t s, bool is_white) const
 state_t CheckersLogic::straight_moves_in_direction(state_t s, const Direction& dir)
 {
     state_t moves = 0;
-    state_t next = dir.move(s);
-    while (s & ~dir._border)
+
+    while (s)
     {
-        moves |= next;
-        s = next;
-        next = dir.move(s);
+        state_t cur = alg::first_set_piece(s);
+        s ^= cur;
+
+        state_t next = dir.move(cur);
+        while (cur & ~dir._border)
+        {
+            moves |= next;
+            cur = next;
+            next = dir.move(cur);
+        }
     }
     return moves;
 }
