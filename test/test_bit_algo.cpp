@@ -44,3 +44,16 @@ TEST(BitAlgoTests, FirstSetPiece)
     EXPECT_EQ(alg::first_set_piece(0), 0);
 }
 
+TEST(BitAlgoTests, Add)
+{
+    state_t s = 0b10'001'000'010;
+    state_t r = 0b10'100'000'000'001'010;
+    EXPECT_EQ(alg::add(s, r), 0b10'100'010'001'001'010);
+}
+
+TEST(BitAlgoTests, Subtract)
+{
+    state_t s = 0b10'100'000'000'001'010;
+    state_t r = 0b100'010'001'000'010;
+    EXPECT_EQ(alg::subtract(s, r), 0b10'000'000'000'001'000);
+}

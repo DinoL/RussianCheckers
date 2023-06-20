@@ -28,4 +28,14 @@ namespace alg
         return s & ~(s-1);
     }
 
+    state_t add(state_t s, state_t r)
+    {
+        return s | r;
+    }
+
+    state_t subtract(state_t s, state_t r)
+    {
+        return s & ~r;
+    }
+
 }

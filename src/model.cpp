@@ -22,7 +22,7 @@ void MyModel::restart()
 
 bool MyModel::has_any_piece(int cell) const
 {
-    return has_white_piece(cell) || has_black_piece(cell);
+    return alg::has_piece(_logic.filled(), cell);
 }
 
 bool MyModel::has_white_piece(int cell) const
