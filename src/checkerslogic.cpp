@@ -33,7 +33,7 @@ state_t CheckersLogic::step_moves(state_t s, bool is_white) const
     return ~filled() & (man_moves | king_moves);
 }
 
-state_t CheckersLogic::man_step_moves(state_t s, bool is_white) const
+state_t CheckersLogic::man_step_moves(state_t s, bool is_white)
 {
     return is_white ?
                (s<<4)|((s&0xe0e0e0e)<<3)|((s&0x707070)<<5) :

@@ -38,3 +38,17 @@ TEST(CheckersLogicTests, StraightMovesInDirection)
     state_t bl_moves = CheckersLogic::straight_moves_in_direction(s, bl);
     EXPECT_EQ(bl_moves, 0x04663315);
 }
+
+TEST(CheckersLogicTests, ManStepMoves)
+{
+    state_t s = 0x41610288;
+    EXPECT_EQ(CheckersLogic::man_step_moves(s, true), 0x1e1038c0);
+    EXPECT_EQ(CheckersLogic::man_step_moves(s, false), 0xc1e1038);
+}
+
+TEST(CheckersLogicTests, ManEatMoves)
+{
+    state_t s = 0x41610288;
+    state_t b = 0x04041040;
+    EXPECT_EQ(CheckersLogic::man_eat_moves(s, b), 0x60216600);
+}
