@@ -26,12 +26,13 @@ jobs:
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
+        aqtversion: '==3.1.*'
         version:      ${{ env.QT_VERSION }}
         host:         linux
         target:       desktop
         arch:         gcc_64
         dir:          ${{ runner.temp }}
-        modules:      qtquick
+        modules:      qtquick3d qtquicktimeline
         setup-python: false
 
     - name: Configure CMake
