@@ -31,13 +31,13 @@ state_t CheckersLogic::step_moves(state_t s, bool is_white) const
     const state_t next = is_white ? (s<<4)|((s&0xe0e0e0e)<<3)|((s&0x707070)<<5) :
                                     (s>>4)|((s&0xe0e0e0e)>>5)|((s&0x70707070)>>3);
     const state_t king_moves = king_step_moves(s & get_kings_state(is_white));
-    return ~_white & ~_black & (next | king_moves);
+    return ~filled() & (next | king_moves);
 }
 
 state_t CheckersLogic::eat_moves(state_t s, bool is_white) const
 {
     const state_t b = get_state(!is_white);
-    const state_t kings = is_white ? _white_kings : _black_kings;
+    const state_t kings = get_kings_state(is_white);
     const state_t kings_eat_moves = king_eat_moves(s & kings, b);
 
     s &= ~kings;
@@ -50,7 +50,7 @@ state_t CheckersLogic::eat_moves(state_t s, bool is_white) const
         |((s&0xe0e0e00&(b<<5))>>9)
         |((s&0x7070700&(b<<4))>>7)
         |((s&0x70707000&(b<<3))>>7));
-    return ~filled() & (next|kings_eat_moves);
+    return ~filled() & (next | kings_eat_moves);
 }
 
 state_t CheckersLogic::straight_moves_in_direction(state_t s, const Direction& dir)
