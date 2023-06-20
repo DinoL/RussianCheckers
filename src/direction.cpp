@@ -38,7 +38,7 @@ state_t Direction::free_moves(state_t s, state_t p) const
         while ((next & ~p) && (cur & ~_border))
         {
             res |= next;
-            s = next;
+            cur = next;
             next = move(cur);
         }
     }
