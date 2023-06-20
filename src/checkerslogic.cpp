@@ -28,20 +28,21 @@ state_t CheckersLogic::get_kings_state(bool is_white) const
 
 state_t CheckersLogic::step_moves(state_t s, bool is_white) const
 {
-    const state_t next = is_white ? (s<<4)|((s&0xe0e0e0e)<<3)|((s&0x707070)<<5) :
-                                    (s>>4)|((s&0xe0e0e0e)>>5)|((s&0x70707070)>>3);
+    const state_t man_moves = man_step_moves(s, is_white);
     const state_t king_moves = king_step_moves(s & get_kings_state(is_white));
-    return ~filled() & (next | king_moves);
+    return ~filled() & (man_moves | king_moves);
 }
 
-state_t CheckersLogic::eat_moves(state_t s, bool is_white) const
+state_t CheckersLogic::man_step_moves(state_t s, bool is_white) const
 {
-    const state_t b = get_state(!is_white);
-    const state_t kings = get_kings_state(is_white);
-    const state_t kings_eat_moves = king_eat_moves(s & kings, b);
+    return is_white ?
+               (s<<4)|((s&0xe0e0e0e)<<3)|((s&0x707070)<<5) :
+               (s>>4)|((s&0xe0e0e0e)>>5)|((s&0x70707070)>>3);
+}
 
-    s &= ~kings;
-    const state_t next =
+state_t CheckersLogic::man_eat_moves(state_t s, state_t b)
+{
+    return
         (((s&0x70707&(b>>4))<<9)
         |((s&0x707070&(b>>5))<<9)
         |((s&0xe0e0e0&(b>>4))<<7)
@@ -50,7 +51,15 @@ state_t CheckersLogic::eat_moves(state_t s, bool is_white) const
         |((s&0xe0e0e00&(b<<5))>>9)
         |((s&0x7070700&(b<<4))>>7)
         |((s&0x70707000&(b<<3))>>7));
-    return ~filled() & (next | kings_eat_moves);
+}
+
+state_t CheckersLogic::eat_moves(state_t s, bool is_white) const
+{
+    const state_t b = get_state(!is_white);
+    const state_t kings = get_kings_state(is_white);
+    const state_t kings_eat_moves = king_eat_moves(s & kings, b);
+    const state_t men_eat_moves = man_eat_moves(s & ~kings, b);
+    return ~filled() & (men_eat_moves | kings_eat_moves);
 }
 
 state_t CheckersLogic::straight_moves_in_direction(state_t s, const Direction& dir)
@@ -236,17 +245,7 @@ void CheckersLogic::move_piece(int piece, int cell)
         const state_t start = alg::to_state(std::min(piece, cell));
         const state_t end = alg::to_state(std::max(piece, cell));
         const state_t to_remove = get_between(start, end);
-
-        if (!_white_turn)
-        {
-            _white &= ~to_remove;
-            _white_kings &= ~to_remove;
-        }
-        else
-        {
-            _black &= ~to_remove;
-            _black_kings &= ~to_remove;
-        }
+        clear_cells(to_remove);
     }
 
     bool can_eat_more = eat_moves(alg::to_state(cell), _white_turn);
@@ -261,6 +260,15 @@ void CheckersLogic::move_piece(int piece, int cell)
         _activePiece = -1;
         _eatingPiece = -1;
     }
+}
+
+void CheckersLogic::clear_cells(state_t to_remove)
+{
+    state_t negate = ~to_remove;
+    _white &= negate;
+    _white_kings &= negate;
+    _black &= negate;
+    _black_kings &= negate;
 }
 
 state_t CheckersLogic::get_between(state_t start, state_t end)

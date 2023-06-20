@@ -16,10 +16,12 @@ public:
     void switch_turn();
     void reset();
     void move_piece(int piece, int cell);
+    void clear_cells(state_t to_remove);
 
     // queries
     state_t moves(state_t s, bool is_white) const;
     state_t step_moves(state_t s, bool is_white) const;
+    state_t man_step_moves(state_t s, bool is_white) const;
     state_t eat_moves(state_t s, bool is_white) const;
     state_t current_moves() const;
     state_t current_eat_moves() const;
@@ -39,6 +41,7 @@ public:
     // static
     static state_t get_between(state_t start, state_t end);
     static state_t straight_moves_in_direction(state_t s, const Direction& dir);
+    static state_t man_eat_moves(state_t s, state_t b);
 
 private:
     state_t _white;
