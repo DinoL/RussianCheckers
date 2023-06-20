@@ -36,21 +36,21 @@ state_t CheckersLogic::step_moves(state_t s, bool is_white) const
 state_t CheckersLogic::man_step_moves(state_t s, bool is_white)
 {
     return is_white ?
-               (s<<4)|((s&0xe0e0e0e)<<3)|((s&0x707070)<<5) :
-               (s>>4)|((s&0xe0e0e0e)>>5)|((s&0x70707070)>>3);
+               (s << 4) | ((s & 0xe0e0e0e) << 3) | ((s & 0x707070) << 5) :
+               (s >> 4) | ((s & 0xe0e0e0e) >> 5) | ((s & 0x70707070) >> 3);
 }
 
 state_t CheckersLogic::man_eat_moves(state_t s, state_t b)
 {
     return
-        (((s&0x70707&(b>>4))<<9)
-        |((s&0x707070&(b>>5))<<9)
-        |((s&0xe0e0e0&(b>>4))<<7)
-        |((s&0xe0e0e&(b>>3))<<7)
-        |((s&0xe0e0e000&(b<<4))>>9)
-        |((s&0xe0e0e00&(b<<5))>>9)
-        |((s&0x7070700&(b<<4))>>7)
-        |((s&0x70707000&(b<<3))>>7));
+        (((s  & 0x70707 & (b >> 4)) << 9)
+        |((s  & 0x707070 & (b >> 5)) << 9)
+        |((s  & 0xe0e0e0 & (b >> 4)) << 7)
+        |((s  & 0xe0e0e & (b >> 3)) << 7)
+        |((s  & 0xe0e0e000 & (b << 4)) >> 9)
+        |((s  & 0xe0e0e00 & (b << 5)) >> 9)
+        |((s  & 0x7070700 & (b << 4)) >> 7)
+        |((s  & 0x70707000 & (b << 3)) >> 7));
 }
 
 state_t CheckersLogic::eat_moves(state_t s, bool is_white) const
@@ -62,35 +62,14 @@ state_t CheckersLogic::eat_moves(state_t s, bool is_white) const
     return ~filled() & (men_eat_moves | kings_eat_moves);
 }
 
-state_t CheckersLogic::king_step_moves_in_direction(state_t s, const Direction& dir) const
-{
-    const state_t p = filled();
-    state_t moves = 0;
-    state_t next = dir.move(s);
-    while ((next & ~p) && (s & ~dir._border))
-    {
-        moves |= next;
-        s = next;
-        next = dir.move(s);
-    }
-    return moves;
-}
-
 state_t CheckersLogic::king_step_moves(state_t s) const
 {
-    state_t moves = 0;
+    state_t p = filled();
 
-    while (s)
-    {
-        state_t start = alg::first_set_piece(s);
-        s ^= start;
-
-        moves |= king_step_moves_in_direction(start, Direction::top_right());
-        moves |= king_step_moves_in_direction(start, Direction::bottom_left());
-        moves |= king_step_moves_in_direction(start, Direction::top_left());
-        moves |= king_step_moves_in_direction(start, Direction::bottom_right());
-    }
-    return moves;
+    return Direction::top_right().free_moves(s, p)
+         | Direction::bottom_left().free_moves(s, p)
+         | Direction::top_left().free_moves(s, p)
+         | Direction::bottom_right().free_moves(s, p);
 }
 
 state_t CheckersLogic::king_eat_moves_in_direction(state_t s, state_t opponent, state_t filled, const Direction& dir) const

@@ -24,7 +24,6 @@ public:
     state_t eat_moves(state_t s, bool is_white) const;
     state_t current_moves() const;
     state_t current_eat_moves() const;
-    state_t king_step_moves_in_direction(state_t s, const Direction& dir) const;
     state_t king_step_moves(state_t s) const;
     state_t king_eat_moves_in_direction(state_t s, state_t opponent, state_t filled, const Direction& dir) const;
     state_t king_eat_moves(state_t s, state_t opponent, state_t filled) const;
