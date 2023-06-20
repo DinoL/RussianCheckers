@@ -242,10 +242,10 @@ void CheckersLogic::clear_cells(state_t to_remove)
 state_t CheckersLogic::get_between(state_t start, state_t end)
 {
     return ~(start | end) &
-            (Direction::top_right().moves(start) &
-             Direction::bottom_left().moves(end)) |
-            (Direction::top_left().moves(start) &
-             Direction::bottom_right().moves(end));
+            (Direction::top_right().all_moves(start) &
+             Direction::bottom_left().all_moves(end)) |
+            (Direction::top_left().all_moves(start) &
+             Direction::bottom_right().all_moves(end));
 }
 
 state_t CheckersLogic::filled() const

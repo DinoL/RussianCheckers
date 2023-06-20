@@ -11,7 +11,8 @@ public:
     bool up() const;
     int step(state_t s) const;
     state_t move(state_t s) const;
-    state_t moves(state_t s) const;
+    state_t all_moves(state_t s) const;
+    state_t free_moves(state_t s, state_t p) const;
 
     static Direction top_right();
     static Direction top_left();
