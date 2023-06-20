@@ -57,7 +57,7 @@ state_t CheckersLogic::eat_moves(state_t s, bool is_white) const
 {
     const state_t b = get_state(!is_white);
     const state_t kings = get_kings_state(is_white);
-    const state_t kings_eat_moves = king_eat_moves(s & kings, b);
+    const state_t kings_eat_moves = king_eat_moves(s & kings, b, filled());
     const state_t men_eat_moves = man_eat_moves(s & ~kings, b);
     return ~filled() & (men_eat_moves | kings_eat_moves);
 }
@@ -146,7 +146,7 @@ state_t CheckersLogic::king_eat_moves_in_direction(state_t s, state_t opponent, 
         filled_after_move &= ~start;
         filled_after_move |= end;
 
-        bool can_continue = king_has_eat_moves(end, opp, filled_after_move);
+        bool can_continue = (king_eat_moves(end, opp, filled_after_move) != 0);
         if (can_continue)
         {
             continuous_eat_moves |= end;
@@ -156,7 +156,7 @@ state_t CheckersLogic::king_eat_moves_in_direction(state_t s, state_t opponent, 
     return continuous_eat_moves ? continuous_eat_moves : moves;
 }
 
-bool CheckersLogic::king_has_eat_moves(state_t s, state_t opponent, state_t filled) const
+state_t CheckersLogic::king_eat_moves(state_t s, state_t opponent, state_t filled) const
 {
     state_t moves = 0;
 
@@ -169,25 +169,6 @@ bool CheckersLogic::king_has_eat_moves(state_t s, state_t opponent, state_t fill
         moves |= king_eat_moves_in_direction(start, opponent, filled, Direction::bottom_left());
         moves |= king_eat_moves_in_direction(start, opponent, filled, Direction::top_left());
         moves |= king_eat_moves_in_direction(start, opponent, filled, Direction::bottom_right());
-    }
-
-    return moves;
-}
-
-state_t CheckersLogic::king_eat_moves(state_t s, state_t opponent) const
-{
-    state_t moves = 0;
-    const state_t p = filled();
-
-    while (s)
-    {
-        state_t start = alg::first_set_piece(s);
-        s ^= start;
-
-        moves |= king_eat_moves_in_direction(start, opponent, p, Direction::top_right());
-        moves |= king_eat_moves_in_direction(start, opponent, p, Direction::bottom_left());
-        moves |= king_eat_moves_in_direction(start, opponent, p, Direction::top_left());
-        moves |= king_eat_moves_in_direction(start, opponent, p, Direction::bottom_right());
     }
 
     return moves;

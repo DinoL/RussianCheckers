@@ -28,8 +28,7 @@ public:
     state_t king_step_moves_in_direction(state_t s, const Direction& dir) const;
     state_t king_step_moves(state_t s) const;
     state_t king_eat_moves_in_direction(state_t s, state_t opponent, state_t filled, const Direction& dir) const;
-    bool king_has_eat_moves(state_t s, state_t opponent, state_t filled) const;
-    state_t king_eat_moves(state_t s, state_t opponent) const;
+    state_t king_eat_moves(state_t s, state_t opponent, state_t filled) const;
     state_t filled() const;
 
     // getters
