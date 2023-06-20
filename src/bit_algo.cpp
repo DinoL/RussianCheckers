@@ -38,4 +38,15 @@ namespace alg
         return s & ~r;
     }
 
+    state_t move_piece(state_t s, int from, int to)
+    {
+        state_t res = s;
+        if (s & alg::to_state(from))
+        {
+            res = alg::remove_piece(res, from);
+            res = alg::set_piece(res, to);
+        }
+        return res;
+    }
+
 }

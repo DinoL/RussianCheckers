@@ -57,3 +57,10 @@ TEST(BitAlgoTests, Subtract)
     state_t r = 0b100'010'001'000'010;
     EXPECT_EQ(alg::subtract(s, r), 0b10'000'000'000'001'000);
 }
+
+TEST(BitAlgoTests, MovePiece)
+{
+    state_t s = 0b10'100'000'000'001'010;
+    EXPECT_EQ(alg::move_piece(s, 2, 6), s);
+    EXPECT_EQ(alg::move_piece(s, 3, 6), 0b10'100'000'001'000'010);
+}
