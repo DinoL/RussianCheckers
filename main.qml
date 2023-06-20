@@ -38,8 +38,14 @@ ApplicationWindow {
             }
 
             Text {
-                text: board.whiteTurn ? "white" : "black"
-                color: board.whiteTurn ? "white" : "black"
+                text: {
+                    var cur = board.curTurn
+                    return board.whiteTurn ? "white" : "black"
+                }
+                color: {
+                    var cur = board.curTurn
+                    return board.whiteTurn ? "white" : "black"
+                }
                 font.pointSize: board.squareSize / 4
             }
         }
@@ -82,6 +88,7 @@ ApplicationWindow {
                     width: board.squareSize*(1.0 - 2.0 * cell.gap)
                     height: width
                     color: {
+                        var cur = board.curTurn
                         Model.has_white_piece(index) ? "#ffe" : "#444"
                     }
                     border.color: "black"
@@ -147,7 +154,6 @@ ApplicationWindow {
                             Model.move_piece_to(index);
                             board.whiteTurn = Model.whiteTurn;
                             cell.has_piece = Model.has_any_piece(index)
-                            man.color = Model.has_white_piece(index) ? "#ffe" : "#444"
 
                             if (!Model.has_movable_fields())
                             {
