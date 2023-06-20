@@ -1,5 +1,7 @@
 #include "direction.h"
 
+#include "bit_algo.h"
+
 #include <cmath>
 
 Direction::Direction(int even_step, int odd_step, state_t border)
@@ -26,13 +28,21 @@ state_t Direction::move(state_t s) const
 state_t Direction::moves(state_t s) const
 {
     state_t res = 0;
-    state_t next = move(s);
-    while (s & ~_border)
+
+    while (s)
     {
-        res |= next;
-        s = next;
-        next = move(s);
+        state_t cur = alg::first_set_piece(s);
+        s ^= cur;
+
+        state_t next = move(cur);
+        while (cur & ~_border)
+        {
+            res |= next;
+            cur = next;
+            next = move(cur);
+        }
     }
+
     return res;
 }
 

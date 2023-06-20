@@ -62,26 +62,6 @@ state_t CheckersLogic::eat_moves(state_t s, bool is_white) const
     return ~filled() & (men_eat_moves | kings_eat_moves);
 }
 
-state_t CheckersLogic::straight_moves_in_direction(state_t s, const Direction& dir)
-{
-    state_t moves = 0;
-
-    while (s)
-    {
-        state_t cur = alg::first_set_piece(s);
-        s ^= cur;
-
-        state_t next = dir.move(cur);
-        while (cur & ~dir._border)
-        {
-            moves |= next;
-            cur = next;
-            next = dir.move(cur);
-        }
-    }
-    return moves;
-}
-
 state_t CheckersLogic::king_step_moves_in_direction(state_t s, const Direction& dir) const
 {
     const state_t p = filled();
@@ -262,10 +242,10 @@ void CheckersLogic::clear_cells(state_t to_remove)
 state_t CheckersLogic::get_between(state_t start, state_t end)
 {
     return ~(start | end) &
-            (straight_moves_in_direction(start, Direction::top_right()) &
-             straight_moves_in_direction(end, Direction::bottom_left())) |
-            (straight_moves_in_direction(start, Direction::top_left()) &
-             straight_moves_in_direction(end, Direction::bottom_right()));
+            (Direction::top_right().moves(start) &
+             Direction::bottom_left().moves(end)) |
+            (Direction::top_left().moves(start) &
+             Direction::bottom_right().moves(end));
 }
 
 state_t CheckersLogic::filled() const

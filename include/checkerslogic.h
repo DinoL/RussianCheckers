@@ -38,7 +38,6 @@ public:
 
     // static
     static state_t get_between(state_t start, state_t end);
-    static state_t straight_moves_in_direction(state_t s, const Direction& dir);
     static state_t man_step_moves(state_t s, bool is_white);
     static state_t man_eat_moves(state_t s, state_t b);
 

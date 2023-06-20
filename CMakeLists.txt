@@ -67,6 +67,7 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 add_executable(runUnitTests
     ${TEST_DIR}/test_logic.cpp
     ${TEST_DIR}/test_bit_algo.cpp
+    ${TEST_DIR}/test_direction.cpp
 )
 target_link_libraries(runUnitTests gtest gtest_main checkersLibrary)
 
