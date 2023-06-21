@@ -6,6 +6,7 @@
 
 #include "defines.h"
 #include "direction.h"
+#include "boardstate.h"
 
 class CheckersLogic
 {
@@ -42,12 +43,7 @@ public:
     static state_t king_eat_moves(state_t s, state_t b, state_t p);
 
 private:
-    state_t _white;
-    state_t _black;
-    state_t _white_kings;
-    state_t _black_kings;
-    bool _white_turn;
-    int _eating_piece;
+    BoardState _state;
 };
 
 #endif // CHECKERSLOGIC_H

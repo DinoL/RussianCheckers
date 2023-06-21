@@ -23,6 +23,8 @@ set(COMMON_FILES
     ${INCLUDE_DIR}/defines.h
     ${SRC_DIR}/bit_algo.cpp
     ${INCLUDE_DIR}/bit_algo.h
+    ${SRC_DIR}/boardstate.cpp
+    ${INCLUDE_DIR}/boardstate.h
 )
 
 set(APP_FILES

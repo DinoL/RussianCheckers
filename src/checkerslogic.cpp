@@ -8,27 +8,27 @@ CheckersLogic::CheckersLogic()
 
 void CheckersLogic::switch_turn()
 {
-    _white_turn = !_white_turn;
+    _state.switch_turn();
 }
 
 bool CheckersLogic::is_white_turn() const
 {
-    return _white_turn;
+    return _state._white_turn;
 }
 
 int CheckersLogic::eating_piece() const
 {
-    return _eating_piece;
+    return _state._eating_piece;
 }
 
 state_t CheckersLogic::get_state(bool is_white) const
 {
-    return is_white ? _white : _black;
+    return _state.get_state(is_white);
 }
 
 state_t CheckersLogic::get_kings_state(bool is_white) const
 {
-    return is_white ? _white_kings : _black_kings;
+    return _state.get_kings_state(is_white);
 }
 
 state_t CheckersLogic::step_moves(state_t s, bool is_white) const
@@ -150,9 +150,9 @@ state_t CheckersLogic::king_eat_moves(state_t s, state_t b, state_t p)
 
 state_t CheckersLogic::moves(state_t s, bool is_white) const
 {
-    if (_eating_piece >= 0)
+    if (_state._eating_piece >= 0)
     {
-        return eat_moves(s & alg::to_state(_eating_piece), is_white);
+        return eat_moves(s & alg::to_state(_state._eating_piece), is_white);
     }
     return current_eat_moves() ?
                eat_moves(s, is_white) :
@@ -161,31 +161,19 @@ state_t CheckersLogic::moves(state_t s, bool is_white) const
 
 state_t CheckersLogic::current_moves() const
 {
-    return moves(get_state(_white_turn), _white_turn);
+    return moves(get_state(is_white_turn()), is_white_turn());
 }
 
 state_t CheckersLogic::current_eat_moves() const
 {
-    return eat_moves(get_state(_white_turn), _white_turn);
+    return eat_moves(get_state(is_white_turn()), is_white_turn());
 }
 
 void CheckersLogic::move_piece(int piece, int cell)
 {
     const bool eat_move = current_eat_moves();
 
-    _white = alg::move_piece(_white, piece, cell);
-    _black = alg::move_piece(_black, piece, cell);
-    _white_kings = alg::move_piece(_white_kings, piece, cell);
-    _black_kings = alg::move_piece(_black_kings, piece, cell);
-
-    if (_white_turn && cell > 27)
-    {
-        _white_kings = alg::set_piece(_white_kings, cell);
-    }
-    if (!_white_turn && cell < 4)
-    {
-        _black_kings = alg::set_piece(_black_kings, cell);
-    }
+    _state.move_piece(piece, cell);
 
     if (eat_move)
     {
@@ -195,25 +183,21 @@ void CheckersLogic::move_piece(int piece, int cell)
         clear_cells(to_remove);
     }
 
-    const bool can_eat_more = eat_moves(alg::to_state(cell), _white_turn);
+    const bool can_eat_more = eat_moves(alg::to_state(cell), is_white_turn());
     if (eat_move && can_eat_more)
     {
-        _eating_piece = cell;
+        _state._eating_piece = cell;
     }
     else
     {
         switch_turn();
-        _eating_piece = -1;
+        _state._eating_piece = -1;
     }
 }
 
 void CheckersLogic::clear_cells(state_t to_remove)
 {
-    state_t negate = ~to_remove;
-    _white &= negate;
-    _white_kings &= negate;
-    _black &= negate;
-    _black_kings &= negate;
+    _state.clear_cells(to_remove);
 }
 
 state_t CheckersLogic::get_between(state_t start, state_t end)
@@ -227,16 +211,11 @@ state_t CheckersLogic::get_between(state_t start, state_t end)
 
 state_t CheckersLogic::filled() const
 {
-    return _white | _black;
+    return _state.filled();
 }
 
 void CheckersLogic::reset()
 {
-    _white = constants::WHITE_START;
-    _black = constants::BLACK_START;
-    _white_kings = 0;
-    _black_kings = 0;
-    _white_turn = true;
-    _eating_piece = -1;
+    _state = BoardState();
 }
 

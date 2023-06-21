@@ -1,6 +1,7 @@
 #include <iostream>
 #include <gtest/gtest.h>
 
+#include "constants.h"
 #include "checkerslogic.h"
 
 TEST(CheckersLogicTests, WhiteTurnFirst)
@@ -14,6 +15,13 @@ TEST(CheckersLogicTests, FirstMove)
     CheckersLogic logic;
     EXPECT_EQ(logic.current_moves(), 0xf000);
     EXPECT_EQ(logic.current_eat_moves(), 0);
+}
+
+TEST(CheckersLogicTests, FilledOnStart)
+{
+    CheckersLogic logic;
+    EXPECT_EQ(logic.filled(), constants::WHITE_START
+                            | constants::BLACK_START);
 }
 
 TEST(CheckersLogicTests, GetBetween)
