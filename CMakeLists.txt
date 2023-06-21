@@ -38,6 +38,7 @@ qt_add_qml_module(appRussianCheckers
     URI RussianCheckers
     VERSION 1.0
     QML_FILES main.qml
+    NO_RESOURCE_TARGET_PATH
 )
 
 set_target_properties(appRussianCheckers PROPERTIES
