@@ -32,3 +32,15 @@ TEST(DirectionTests, FreeMoves)
     EXPECT_EQ(Direction::bottom_right().free_moves(s, p), 0x40);
     EXPECT_EQ(Direction::bottom_left().free_moves(s, p), 0x00042022);
 }
+
+TEST(DirectionTests, EatMoves)
+{
+    state_t s = 0x80200050;
+    state_t b = 0x04061800;
+    state_t p = 0x84261850;
+
+    EXPECT_EQ(Direction::top_right().eat_moves(s, b, p), 0x48408000);
+    EXPECT_EQ(Direction::top_left().eat_moves(s, b, p), 0x01100000);
+    EXPECT_EQ(Direction::bottom_right().eat_moves(s, b, p), 0x00004000);
+    EXPECT_EQ(Direction::bottom_left().eat_moves(s, b, p), 0x00002200);
+}
