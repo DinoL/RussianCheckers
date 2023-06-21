@@ -32,6 +32,14 @@ TEST(CheckersLogicTests, ManEatMoves)
     EXPECT_EQ(CheckersLogic::man_eat_moves(s, b), 0x60216600);
 }
 
+TEST(CheckersLogicTests, KingStepMoves)
+{
+    state_t s = 0x09020000;
+    state_t p = 0x0d820200;
+
+    EXPECT_EQ(CheckersLogic::king_step_moves(s, p), 0xd0743548);
+}
+
 TEST(CheckersLogicTests, KingEatMovesUnfiltered)
 {
     state_t s = 0x80200050;

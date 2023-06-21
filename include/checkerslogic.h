@@ -24,7 +24,6 @@ public:
     state_t eat_moves(state_t s, bool is_white) const;
     state_t current_moves() const;
     state_t current_eat_moves() const;
-    state_t king_step_moves(state_t s) const;
     state_t filled() const;
 
     // getters
@@ -37,6 +36,7 @@ public:
     static state_t get_between(state_t start, state_t end);
     static state_t man_step_moves(state_t s, bool is_white);
     static state_t man_eat_moves(state_t s, state_t b);
+    static state_t king_step_moves(state_t s, state_t p );
     static state_t king_eat_moves_unfiltered(state_t s, state_t b, state_t p);
     static state_t king_eat_moves_in_direction(state_t s, state_t b, state_t p, const Direction& dir);
     static state_t king_eat_moves(state_t s, state_t b, state_t p);

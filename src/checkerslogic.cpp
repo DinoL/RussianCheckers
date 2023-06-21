@@ -28,9 +28,11 @@ state_t CheckersLogic::get_kings_state(bool is_white) const
 
 state_t CheckersLogic::step_moves(state_t s, bool is_white) const
 {
-    const state_t man_moves = man_step_moves(s, is_white);
-    const state_t king_moves = king_step_moves(s & get_kings_state(is_white));
-    return ~filled() & (man_moves | king_moves);
+    const state_t p = filled();
+    const state_t kings = get_kings_state(is_white);
+    const state_t kings_moves = king_step_moves(s & kings, p);
+    const state_t men_moves = man_step_moves(s & ~kings, is_white);
+    return ~p & (men_moves | kings_moves);
 }
 
 state_t CheckersLogic::man_step_moves(state_t s, bool is_white)
@@ -55,16 +57,16 @@ state_t CheckersLogic::man_eat_moves(state_t s, state_t b)
 
 state_t CheckersLogic::eat_moves(state_t s, bool is_white) const
 {
+    const state_t p = filled();
     const state_t b = get_state(!is_white);
     const state_t kings = get_kings_state(is_white);
-    const state_t kings_eat_moves = king_eat_moves(s & kings, b, filled());
+    const state_t kings_eat_moves = king_eat_moves(s & kings, b, p);
     const state_t men_eat_moves = man_eat_moves(s & ~kings, b);
-    return ~filled() & (men_eat_moves | kings_eat_moves);
+    return ~p & (men_eat_moves | kings_eat_moves);
 }
 
-state_t CheckersLogic::king_step_moves(state_t s) const
+state_t CheckersLogic::king_step_moves(state_t s, state_t p)
 {
-    const state_t p = filled();
     return Direction::top_right().free_moves(s, p)
          | Direction::bottom_left().free_moves(s, p)
          | Direction::top_left().free_moves(s, p)
