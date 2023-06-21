@@ -129,10 +129,13 @@ state_t CheckersLogic::king_eat_moves(state_t s, state_t b, state_t p)
         state_t start = alg::first_set_piece(s);
         s ^= start;
 
-        moves |= king_eat_moves_in_direction(start, b, p, Direction::top_right());
-        moves |= king_eat_moves_in_direction(start, b, p, Direction::bottom_left());
-        moves |= king_eat_moves_in_direction(start, b, p, Direction::top_left());
-        moves |= king_eat_moves_in_direction(start, b, p, Direction::bottom_right());
+        for (const auto& dir : {Direction::top_right(),
+                                Direction::top_left(),
+                                Direction::bottom_right(),
+                                Direction::bottom_left()})
+        {
+            moves |= king_eat_moves_in_direction(start, b, p, dir);
+        }
     }
 
     return moves;

@@ -36,7 +36,7 @@ TEST(CheckersLogicTests, KingEatMovesUnfiltered)
 {
     state_t s = 0x80200050;
     state_t b = 0x04061800;
-    state_t p = 0x84261850;
+    state_t p = s | b;
 
     EXPECT_EQ(CheckersLogic::king_eat_moves_unfiltered(s, b, p), 0x4950e200);
 }
@@ -45,7 +45,7 @@ TEST(CheckersLogicTests, KingEatMovesInDirection)
 {
     state_t s = 0x50000004;
     state_t b = 0x00300240;
-    state_t p = 0x50300244;
+    state_t p = s | b;
 
     const auto tr = Direction::top_right();
     const auto tl = Direction::top_left();
@@ -70,7 +70,7 @@ TEST(CheckersLogicTests, KingEatMoves)
 {
     state_t s = 0x80200041;
     state_t b = 0x04061800;
-    state_t p = 0x84261841;
+    state_t p = s | b;
 
     EXPECT_EQ(CheckersLogic::king_eat_moves(s, b, p), 0x4150e200);
 }
