@@ -10,6 +10,18 @@ bool BoardState::operator==(const BoardState& other) const
         && _eating_piece == other._eating_piece;
 }
 
+bool BoardState::valid() const
+{
+    return ((_white & _white_kings) == _white_kings)
+        && ((_white | _white_kings) == _white)
+        && ((_black & _black_kings) == _black_kings)
+        && ((_black | _black_kings) == _black)
+        && ((_white & _black) == 0)
+        && ((_white_kings & _black_kings) == 0)
+        && (_eating_piece >= -1)
+        && (_eating_piece < 32);
+}
+
 void BoardState::clear_cells(state_t to_remove)
 {
     state_t negate = ~to_remove;

@@ -16,6 +16,8 @@ public:
 
     bool operator==(const BoardState& other) const;
 
+    bool valid() const;
+
     state_t filled() const
     {
         return _white | _black;
