@@ -3,6 +3,16 @@
 
 #include "direction.h"
 
+TEST(DirectionTests, Move)
+{
+    state_t s = 0x4000;
+
+    EXPECT_EQ(Direction::top_right().move(s), 0x80000);
+    EXPECT_EQ(Direction::top_left().move(s), 0x40000);
+    EXPECT_EQ(Direction::bottom_right().move(s), 0x800);
+    EXPECT_EQ(Direction::bottom_left().move(s), 0x400);
+}
+
 TEST(DirectionTests, AllMoves)
 {
     state_t s = 0x4c000340;
