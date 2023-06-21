@@ -33,16 +33,18 @@ void BoardState::clear_cells(state_t to_remove)
 
 void BoardState::move_piece(int piece, int cell)
 {
+    const bool is_white_piece = (_white & alg::to_state(piece));
+
     _white = alg::move_piece(_white, piece, cell);
     _black = alg::move_piece(_black, piece, cell);
     _white_kings = alg::move_piece(_white_kings, piece, cell);
     _black_kings = alg::move_piece(_black_kings, piece, cell);
 
-    if (_white_turn && cell > 27)
+    if (is_white_piece && cell > 27)
     {
         _white_kings = alg::set_piece(_white_kings, cell);
     }
-    if (!_white_turn && cell < 4)
+    if (!is_white_piece && cell < 4)
     {
         _black_kings = alg::set_piece(_black_kings, cell);
     }

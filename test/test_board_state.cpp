@@ -58,3 +58,23 @@ TEST(BoardStateTests, MovePiece)
     EXPECT_EQ(state, expected);
     EXPECT_TRUE(state.valid());
 }
+
+TEST(BoardStateTests, BecomeKing)
+{
+    BoardState state{0x04000000,
+                     0x40,
+                     0,
+                     0,
+                     true, -1};
+    EXPECT_TRUE(state.valid());
+    state.move_piece(26, 29);
+    state.move_piece(6, 3);
+
+    BoardState expected{0x20000000,
+                        0x8,
+                        0x20000000,
+                        0x8,
+                        true, -1};
+    EXPECT_EQ(state, expected);
+    EXPECT_TRUE(state.valid());
+}
