@@ -71,38 +71,48 @@ state_t CheckersLogic::king_step_moves(state_t s) const
          | Direction::bottom_right().free_moves(s, p);
 }
 
-state_t CheckersLogic::king_eat_moves_in_direction(state_t s, state_t b, state_t p, const Direction& dir) const
+state_t CheckersLogic::king_eat_moves_in_direction(state_t s, state_t b, state_t p, const Direction& dir)
 {
-    const state_t moves = dir.eat_moves(s, b, p);
-    state_t moves_to_check = moves;
-    state_t continuous_eat_moves = 0;
+    state_t res = 0;
 
-    while (moves_to_check)
+    while (s)
     {
-        state_t end = alg::first_set_piece(moves_to_check);
-        moves_to_check ^= end;
+        const state_t start = alg::first_set_piece(s);
+        s ^= start;
 
-        state_t b2 = b;
-        state_t to_remove = (get_between(s, end)
-                           | get_between(end, s));
-        b2 &= ~to_remove;
+        const state_t moves = dir.eat_moves(start, b, p);
+        state_t moves_to_check = moves;
+        state_t continuous_eat_moves = 0;
 
-        state_t p2 = p;
-        p2 &= ~to_remove;
-        p2 &= ~s;
-        p2 |= end;
-
-        const bool can_continue = (king_eat_moves_unfiltered(end, b2, p2) != 0);
-        if (can_continue)
+        while (moves_to_check)
         {
-            continuous_eat_moves |= end;
+            state_t end = alg::first_set_piece(moves_to_check);
+            moves_to_check ^= end;
+
+            state_t b2 = b;
+            state_t to_remove = (get_between(start, end)
+                               | get_between(end, start));
+            b2 &= ~to_remove;
+
+            state_t p2 = p;
+            p2 &= ~to_remove;
+            p2 &= ~start;
+            p2 |= end;
+
+            if (king_eat_moves_unfiltered(end, b2, p2))
+            {
+                continuous_eat_moves |= end;
+            }
         }
+
+        res |= (continuous_eat_moves ? continuous_eat_moves : moves);
     }
 
-    return continuous_eat_moves ? continuous_eat_moves : moves;
+
+    return res;
 }
 
-state_t CheckersLogic::king_eat_moves_unfiltered(state_t s, state_t b, state_t p) const
+state_t CheckersLogic::king_eat_moves_unfiltered(state_t s, state_t b, state_t p)
 {
     return Direction::top_right().eat_moves(s, b, p)
          | Direction::bottom_left().eat_moves(s, b, p)
@@ -110,7 +120,7 @@ state_t CheckersLogic::king_eat_moves_unfiltered(state_t s, state_t b, state_t p
          | Direction::bottom_right().eat_moves(s, b, p);
 }
 
-state_t CheckersLogic::king_eat_moves(state_t s, state_t b, state_t p) const
+state_t CheckersLogic::king_eat_moves(state_t s, state_t b, state_t p)
 {
     state_t moves = 0;
 
