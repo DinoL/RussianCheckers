@@ -1,5 +1,15 @@
 #include "boardstate.h"
 
+bool BoardState::operator==(const BoardState& other) const
+{
+    return _white == other._white
+        && _black == other._black
+        && _white_kings == other._white_kings
+        && _black_kings == other._black_kings
+        && _white_turn == other._white_turn
+        && _eating_piece == other._eating_piece;
+}
+
 void BoardState::clear_cells(state_t to_remove)
 {
     state_t negate = ~to_remove;

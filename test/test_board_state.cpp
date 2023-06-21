@@ -31,3 +31,20 @@ TEST(BoardStateTests, ClearCells)
     state2.clear_cells(0x366cc993);
     EXPECT_EQ(state2.filled(), 0xc913322c);
 }
+
+TEST(BoardStateTests, MovePiece)
+{
+    BoardState state{0x5913a01a,
+                     0xa2481b24,
+                     0x00108002,
+                     0x02001100,
+                     false, -1};
+    state.move_piece(12, 21);
+
+    BoardState expected{0x5913a01a,
+                        0xa2680b24,
+                        0x00108002,
+                        0x02200100,
+                        false, -1};
+    EXPECT_EQ(state, expected);
+}

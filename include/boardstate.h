@@ -14,6 +14,8 @@ public:
     bool _white_turn = true;
     int _eating_piece = -1;
 
+    bool operator==(const BoardState& other) const;
+
     state_t filled() const
     {
         return _white | _black;
