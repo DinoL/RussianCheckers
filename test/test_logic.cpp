@@ -9,6 +9,13 @@ TEST(CheckersLogicTests, WhiteTurnFirst)
     EXPECT_TRUE(logic.is_white_turn());
 }
 
+TEST(CheckersLogicTests, FirstMove)
+{
+    CheckersLogic logic;
+    EXPECT_EQ(logic.current_moves(), 0xf000);
+    EXPECT_EQ(logic.current_eat_moves(), 0);
+}
+
 TEST(CheckersLogicTests, GetBetween)
 {
     EXPECT_EQ(CheckersLogic::get_between(0x4000, 0x20000), 0);
