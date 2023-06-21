@@ -17,7 +17,7 @@ void MyModel::restart()
 {
     _logic.reset();
     _whiteTurn = _logic.is_white_turn();
-    _activePiece = _logic.active_piece();
+    _activePiece = -1;
 }
 
 bool MyModel::has_any_piece(int cell) const
@@ -59,7 +59,7 @@ void MyModel::move_piece_to(int cell)
 
     _logic.move_piece(piece, cell);
     _whiteTurn = _logic.is_white_turn();
-    _activePiece = _logic.active_piece();
+    _activePiece = _logic.eating_piece();
 }
 
 bool MyModel::piece_can_move_to(int piece, int cell) const

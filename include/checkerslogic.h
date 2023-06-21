@@ -27,10 +27,10 @@ public:
     state_t filled() const;
 
     // getters
-    int active_piece() const;
     state_t get_state(bool is_white) const;
     state_t get_kings_state(bool is_white) const;
     bool is_white_turn() const;
+    int eating_piece() const;
 
     // static
     static state_t get_between(state_t start, state_t end);
@@ -47,8 +47,7 @@ private:
     state_t _white_kings;
     state_t _black_kings;
     bool _white_turn;
-    int _eatingPiece;
-    int _activePiece;
+    int _eating_piece;
 };
 
 #endif // CHECKERSLOGIC_H
