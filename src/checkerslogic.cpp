@@ -114,7 +114,6 @@ state_t CheckersLogic::king_eat_moves_in_direction(state_t s, state_t b, state_t
         res |= (continuous_eat_moves ? continuous_eat_moves : moves);
     }
 
-
     return res;
 }
 

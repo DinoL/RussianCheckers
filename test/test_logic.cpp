@@ -208,3 +208,69 @@ TEST(CheckersLogicTests, BlackContinueEating)
     EXPECT_EQ(logic.current_moves(), 0x00080000);
     EXPECT_EQ(logic.current_eat_moves(), 0x000c0100);
 }
+
+TEST(CheckersLogicTests, WhiteStepMoves)
+{
+    BoardState state{0x100028d0,
+                     0x04188020,
+                     0x10000010,
+                     0x20,
+                     true, -1};
+    EXPECT_TRUE(state.valid());
+
+    CheckersLogic logic(state);
+    EXPECT_EQ(logic.moves(0x100028d0, true), 0x3264703);
+    EXPECT_EQ(logic.step_moves(0x100028d0, true), 0x3264703);
+    EXPECT_EQ(logic.moves(0x28c0, true), 0x00064400);
+    EXPECT_EQ(logic.step_moves(0x28c0, true), 0x00064400);
+}
+
+TEST(CheckersLogicTests, BlackStepMoves)
+{
+    BoardState state{0x100028d0,
+                     0x04188020,
+                     0x10000010,
+                     0x20,
+                     false, -1};
+    EXPECT_TRUE(state.valid());
+
+    CheckersLogic logic(state);
+    EXPECT_EQ(logic.moves(0x04188020, false), 0x00635606);
+    EXPECT_EQ(logic.step_moves(0x04188020, false), 0x00635606);
+    EXPECT_EQ(logic.moves(0x04188000, false), 0x00634000);
+    EXPECT_EQ(logic.step_moves(0x04188000, false), 0x00634000);
+}
+
+TEST(CheckersLogicTests, WhiteEatMoves)
+{
+    BoardState state{0x00020d42,
+                     0x0241c000,
+                     0x400,
+                     0x400000,
+                     true, -1};
+    EXPECT_TRUE(state.valid());
+
+    CheckersLogic logic(state);
+    EXPECT_EQ(logic.moves(0x400, true), 0x80000);
+    EXPECT_EQ(logic.eat_moves(0x400, true), 0x80000);
+    EXPECT_EQ(logic.moves(0xc00, true), 0xc0000);
+    EXPECT_EQ(logic.eat_moves(0xc00, true), 0xc0000);
+    EXPECT_EQ(logic.moves(0x20142, true), 0);
+    EXPECT_EQ(logic.eat_moves(0x20142, true), 0);
+}
+
+TEST(CheckersLogicTests, BlackEatMoves)
+{
+    BoardState state{0x00020d42,
+                     0x0241c000,
+                     0x400,
+                     0x400000,
+                     false, -1};
+    EXPECT_TRUE(state.valid());
+
+    CheckersLogic logic(state);
+    EXPECT_EQ(logic.moves(0x4000, false), 0xa0);
+    EXPECT_EQ(logic.eat_moves(0x4000, false), 0xa0);
+    EXPECT_EQ(logic.moves(0x02418000, false), 0);
+    EXPECT_EQ(logic.eat_moves(0x02418000, false), 0);
+}
