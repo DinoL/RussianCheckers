@@ -122,6 +122,18 @@ ApplicationWindow {
                 font.pointSize: board.squareSize / 4
                 horizontalAlignment: Text.AlignHCenter
             }
+
+            MouseArea {
+                id: history_button;
+                width: parent.width
+                height: parent.height
+                acceptedButtons: Qt.RightButton;
+
+                onPressed: {
+                    Model.reset_last_move()
+                    board.curTurn += 1
+                }
+            }
         }
 
         Repeater {

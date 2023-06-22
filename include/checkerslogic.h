@@ -18,6 +18,7 @@ public:
     void reset();
     void move_piece(int piece, int cell);
     void clear_cells(state_t to_remove);
+    void set_state(const BoardState& state);
 
     // queries
     state_t moves(state_t s, bool is_white) const;
@@ -32,6 +33,7 @@ public:
     state_t get_kings_state(bool is_white) const;
     bool is_white_turn() const;
     int eating_piece() const;
+    BoardState state() const;
 
     // static
     static state_t get_between(state_t start, state_t end);

@@ -31,6 +31,8 @@ set(APP_FILES
     ${SRC_DIR}/main.cpp
     ${SRC_DIR}/model.cpp
     ${INCLUDE_DIR}/model.h
+    ${SRC_DIR}/history.cpp
+    ${INCLUDE_DIR}/history.h
 )
 
 add_library(checkersLibrary ${COMMON_FILES})

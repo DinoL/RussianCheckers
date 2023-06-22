@@ -5,6 +5,7 @@
 
 #include "direction.h"
 #include "checkerslogic.h"
+#include "history.h"
 
 using state_t = uint32_t;
 
@@ -30,6 +31,7 @@ public:
     Q_INVOKABLE bool piece_can_move_to(int piece, int cell) const;
     Q_INVOKABLE int activePiece() const;
     Q_INVOKABLE bool whiteTurn() const;
+    Q_INVOKABLE void reset_last_move();
 
 public slots:
     Q_INVOKABLE void setActivePiece(int i_activePiece);
@@ -44,6 +46,7 @@ private:
     int _activePiece;
 
     CheckersLogic _logic;
+    History _history;
 };
 
 #endif // MODEL_H

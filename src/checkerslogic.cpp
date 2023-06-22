@@ -20,6 +20,11 @@ int CheckersLogic::eating_piece() const
     return _state._eating_piece;
 }
 
+BoardState CheckersLogic::state() const
+{
+    return _state;
+}
+
 state_t CheckersLogic::get_state(bool is_white) const
 {
     return _state.get_state(is_white);
@@ -196,6 +201,11 @@ void CheckersLogic::move_piece(int piece, int cell)
 void CheckersLogic::clear_cells(state_t to_remove)
 {
     _state.clear_cells(to_remove);
+}
+
+void CheckersLogic::set_state(const BoardState& state)
+{
+    _state = state;
 }
 
 state_t CheckersLogic::get_between(state_t start, state_t end)

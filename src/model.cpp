@@ -18,6 +18,9 @@ void MyModel::restart()
     _logic.reset();
     _whiteTurn = _logic.is_white_turn();
     _activePiece = -1;
+
+    _history.clear();
+    _history.push(_logic.state());
 }
 
 bool MyModel::has_any_piece(int cell) const
@@ -60,6 +63,7 @@ void MyModel::move_piece_to(int cell)
     _logic.move_piece(piece, cell);
     _whiteTurn = _logic.is_white_turn();
     _activePiece = _logic.eating_piece();
+    _history.push(_logic.state());
 }
 
 bool MyModel::piece_can_move_to(int piece, int cell) const
@@ -75,6 +79,16 @@ int MyModel::activePiece() const
 bool MyModel::whiteTurn() const
 {
     return _whiteTurn;
+}
+
+void MyModel::reset_last_move()
+{
+    if (_history.size() < 2)
+    {
+        return;
+    }
+    _history.pop();
+    _logic.set_state(_history.top());
 }
 
 void MyModel::setActivePiece(int i_activePiece)
