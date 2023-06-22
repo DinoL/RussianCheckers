@@ -111,6 +111,20 @@ TEST(CheckersLogicTests, WhiteCurrentMoves)
     EXPECT_EQ(logic.current_eat_moves(), 0);
 }
 
+TEST(CheckersLogicTests, BlackCurrentMoves)
+{
+    BoardState state{0x00014240,
+                     0x14820000,
+                     0x200,
+                     0x04000000,
+                     false, -1};
+    EXPECT_TRUE(state.valid());
+
+    CheckersLogic logic(state);
+    EXPECT_EQ(logic.current_moves(), 0x6368b000);
+    EXPECT_EQ(logic.current_eat_moves(), 0);
+}
+
 TEST(CheckersLogicTests, WhiteCurrentEatMoves)
 {
     BoardState state{0x00090240,
@@ -125,6 +139,20 @@ TEST(CheckersLogicTests, WhiteCurrentEatMoves)
     EXPECT_EQ(logic.current_eat_moves(), 0x02000000);
 }
 
+TEST(CheckersLogicTests, BlackCurrentEatMoves)
+{
+    BoardState state{0x00090240,
+                     0x14920000,
+                     0x200,
+                     0,
+                     false, -1};
+    EXPECT_TRUE(state.valid());
+
+    CheckersLogic logic(state);
+    EXPECT_EQ(logic.current_moves(), 0x4000);
+    EXPECT_EQ(logic.current_eat_moves(), 0x4000);
+}
+
 TEST(CheckersLogicTests, WhiteCurrentKingEatMoves)
 {
     BoardState state{0x00090240,
@@ -137,6 +165,20 @@ TEST(CheckersLogicTests, WhiteCurrentKingEatMoves)
     CheckersLogic logic(state);
     EXPECT_EQ(logic.current_moves(), 0x20000000);
     EXPECT_EQ(logic.current_eat_moves(), 0x20000000);
+}
+
+TEST(CheckersLogicTests, BlackCurrentKingEatMoves)
+{
+    BoardState state{0x00090240,
+                     0x14920000,
+                     0x200,
+                     0x00800000,
+                     false, -1};
+    EXPECT_TRUE(state.valid());
+
+    CheckersLogic logic(state);
+    EXPECT_EQ(logic.current_moves(), 0x420);
+    EXPECT_EQ(logic.current_eat_moves(), 0x420);
 }
 
 TEST(CheckersLogicTests, WhiteContinueEating)
