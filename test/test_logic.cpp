@@ -97,3 +97,14 @@ TEST(CheckersLogicTests, KingEatMoves)
     EXPECT_EQ(CheckersLogic::king_eat_moves(s, b, p), 0x4150e200);
 }
 
+TEST(CheckersLogicTests, CurrentMoves)
+{
+    BoardState state{0x00090240,
+                     0x14820000,
+                     0x200,
+                     0,
+                     true, -1};
+    CheckersLogic logic(state);
+
+    EXPECT_EQ(logic.current_moves(), 0x88543c35);
+}
