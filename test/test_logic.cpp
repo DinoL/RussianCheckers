@@ -107,4 +107,31 @@ TEST(CheckersLogicTests, CurrentMoves)
     CheckersLogic logic(state);
 
     EXPECT_EQ(logic.current_moves(), 0x88543c35);
+    EXPECT_EQ(logic.current_eat_moves(), 0);
+}
+
+TEST(CheckersLogicTests, CurrentEatMoves)
+{
+    BoardState state{0x00090240,
+                     0x14920000,
+                     0x200,
+                     0,
+                     true, -1};
+    CheckersLogic logic(state);
+
+    EXPECT_EQ(logic.current_moves(), 0x02000000);
+    EXPECT_EQ(logic.current_eat_moves(), 0x02000000);
+}
+
+TEST(CheckersLogicTests, CurrentKingEatMoves)
+{
+    BoardState state{0x00090240,
+                     0x14920000,
+                     0x10200,
+                     0,
+                     true, -1};
+    CheckersLogic logic(state);
+
+    EXPECT_EQ(logic.current_moves(), 0x20000000);
+    EXPECT_EQ(logic.current_eat_moves(), 0x20000000);
 }
