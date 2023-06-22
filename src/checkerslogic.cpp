@@ -1,10 +1,9 @@
 #include "checkerslogic.h"
 #include "bit_algo.h"
 
-CheckersLogic::CheckersLogic()
-{
-    reset();
-}
+CheckersLogic::CheckersLogic(const BoardState& state /*=BoardState()*/)
+    : _state(state)
+{}
 
 void CheckersLogic::switch_turn()
 {

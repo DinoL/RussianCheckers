@@ -11,7 +11,7 @@
 class CheckersLogic
 {
 public:
-    CheckersLogic();
+    CheckersLogic(const BoardState& state = BoardState());
 
     // modifiers
     void switch_turn();
