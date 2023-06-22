@@ -77,3 +77,88 @@ TEST(BoardStateTests, BecomeKing)
     EXPECT_EQ(state, expected);
     EXPECT_TRUE(state.valid());
 }
+
+TEST(BoardStateTests, InvalidWhiteBlackIntersect)
+{
+    BoardState state{0xabcdef85,
+                     0x5432117a,
+                     0,
+                     0,
+                     true, -1};
+    EXPECT_FALSE(state.valid());
+    state._black &= ~0x100;
+    EXPECT_TRUE(state.valid());
+}
+
+TEST(BoardStateTests, InvalidWhiteKingOutside)
+{
+    BoardState state{0xabcdef85,
+                     0x54321072,
+                     0x8,
+                     0,
+                     true, -1};
+    EXPECT_FALSE(state.valid());
+    state._white |= state._white_kings;
+    EXPECT_TRUE(state.valid());
+}
+
+
+TEST(BoardStateTests, InvalidBlackKingOutside)
+{
+    BoardState state{0xabcdef85,
+                     0x54321072,
+                     0,
+                     0x8,
+                     true, -1};
+    EXPECT_FALSE(state.valid());
+    state._black |= state._black_kings;
+    EXPECT_TRUE(state.valid());
+}
+
+TEST(BoardStateTests, InvalidTooLowEatingPiece)
+{
+    BoardState state{0xabcdef85,
+                     0x5432107a,
+                     0x5,
+                     0x8,
+                     false, -2};
+    EXPECT_FALSE(state.valid());
+    state._eating_piece = -1;
+    EXPECT_TRUE(state.valid());
+}
+
+TEST(BoardStateTests, InvalidTooHighEatingPiece)
+{
+    BoardState state{0xabcdef85,
+                     0x5432107a,
+                     0x5,
+                     0x8,
+                     true, 32};
+    EXPECT_FALSE(state.valid());
+    state._eating_piece = 31;
+    EXPECT_TRUE(state.valid());
+}
+
+TEST(BoardStateTests, InvalidEatingPieceEmpty)
+{
+    BoardState state{0xabcdef85,
+                     0x54321072,
+                     0x5,
+                     0x2,
+                     false, 3};
+    EXPECT_FALSE(state.valid());
+    state._black |= alg::to_state(state._eating_piece);
+    EXPECT_TRUE(state.valid());
+}
+
+TEST(BoardStateTests, InvalidEatingPieceWrongColor)
+{
+    BoardState state{0xabcdef85,
+                     0x5432107a,
+                     0x5,
+                     0x2,
+                     true, 3};
+    EXPECT_FALSE(state.valid());
+    state._eating_piece = 2;
+    EXPECT_TRUE(state.valid());
+}

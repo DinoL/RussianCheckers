@@ -152,3 +152,17 @@ TEST(CheckersLogicTests, WhiteContinueEating)
     EXPECT_EQ(logic.current_moves(), 0xa0000000);
     EXPECT_EQ(logic.current_eat_moves(), 0xa0a00000);
 }
+
+TEST(CheckersLogicTests, BlackContinueEating)
+{
+    BoardState state{0x004010a0,
+                     0x1c024000,
+                     0x20,
+                     0x20000,
+                     false, 26};
+    EXPECT_TRUE(state.valid());
+
+    CheckersLogic logic(state);
+    EXPECT_EQ(logic.current_moves(), 0x00080000);
+    EXPECT_EQ(logic.current_eat_moves(), 0x000c0100);
+}
