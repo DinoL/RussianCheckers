@@ -19,7 +19,9 @@ bool BoardState::valid() const
         && ((_white & _black) == 0)
         && ((_white_kings & _black_kings) == 0)
         && (_eating_piece >= -1)
-        && (_eating_piece < 32);
+        && (_eating_piece < 32)
+        && (((_eating_piece >= 0) && (_white & alg::to_state(_eating_piece)))
+        == ((_eating_piece >= 0) && _white_turn));
 }
 
 void BoardState::clear_cells(state_t to_remove)
