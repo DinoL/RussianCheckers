@@ -19,25 +19,98 @@ ApplicationWindow {
 
     Rectangle {
         id: board
-        readonly property int squareSize: Math.min(root.width, root.height) / 8;
+        readonly property int padSize: Math.min(root.width, root.height) / 34
+        readonly property int squareSize: 4 * padSize
         property bool whiteTurn : Model.whiteTurn;
         property int curTurn: 0
 
-        width: squareSize * 8
+        width: squareSize * 8 + 2*padSize
         height: width
-        color: "#fff0b7"
+        color: "#8a7b5b"
+        border.color: "#DCAA33"
+        border.width: 2
+
+        Rectangle {
+            x: parent.padSize - 2
+            y: parent.padSize - 2
+            width: parent.squareSize * 8 + 4
+            height: width
+            color: "#8a7b5b"
+            border.color: "#DCAA33"
+            border.width: 2
+        }
+
+        Repeater {
+            model: 8
+            Text {
+                x: board.padSize + index * board.squareSize
+                y: 0
+                text: "abcdefgh"[index]
+                width: board.squareSize
+                height: board.padSize
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                color: "white"
+            }
+        }
+
+        Repeater {
+            model: 8
+            Text {
+                x: board.padSize + index * board.squareSize
+                y: board.padSize + 8 * board.squareSize
+                text: "abcdefgh"[index]
+                width: board.squareSize
+                height: board.padSize
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                color: "white"
+            }
+        }
+
+        Repeater {
+            model: 8
+            Text {
+                x: board.padSize + 8 * board.squareSize
+                y: board.padSize + index * board.squareSize
+                text: 8 - index
+                width: board.padSize
+                height: board.squareSize
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                color: "white"
+            }
+        }
+
+        Repeater {
+            model: 8
+            Text {
+                x: 0
+                y: board.padSize + index * board.squareSize
+                text: 8 - index
+                width: board.padSize
+                height: board.squareSize
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                color: "white"
+            }
+        }
 
         Rectangle {
             id: indicator
 
+            x: board.padSize
+            y: board.padSize
+            z: 4
+
             width: board.squareSize
             height: width / 2
+            visible: true
 
-            color: {
-                "#deadbeef"
-            }
+            color: "#deadbeef"
 
             Text {
+                width: parent.width
                 text: {
                     var cur = board.curTurn
                     return board.whiteTurn ? "white" : "black"
@@ -47,6 +120,20 @@ ApplicationWindow {
                     return board.whiteTurn ? "white" : "black"
                 }
                 font.pointSize: board.squareSize / 4
+                horizontalAlignment: Text.AlignHCenter
+            }
+        }
+
+        Repeater {
+            model: 32
+            Rectangle {
+                visible: true;
+                width: board.squareSize
+                height: width
+                x: board.padSize + board.squareSize*(2*(index%4)+Math.floor(index/4)%2);
+                y: board.padSize + board.squareSize*(Math.floor(index/4));
+                z: 1
+                color: "#fff0b7"
             }
         }
 
@@ -57,8 +144,8 @@ ApplicationWindow {
                 visible: true;
                 width: board.squareSize
                 height: width
-                x: board.squareSize*(2*(index%4)+Math.floor(index/4)%2);
-                y: board.squareSize*(7-Math.floor(index/4));
+                x: board.padSize + board.squareSize*(2*(index%4)+Math.floor(index/4)%2);
+                y: board.padSize +  board.squareSize*(7-Math.floor(index/4));
                 z: 1
                 property bool has_piece: Model.has_any_piece(index);
                 readonly property real gap: 0.075;
