@@ -73,6 +73,7 @@ add_executable(runUnitTests
     ${TEST_DIR}/test_bit_algo.cpp
     ${TEST_DIR}/test_direction.cpp
     ${TEST_DIR}/test_board_state.cpp
+    ${TEST_DIR}/test_history.cpp
 )
 target_link_libraries(runUnitTests gtest gtest_main checkersLibrary)
 

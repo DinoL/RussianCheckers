@@ -10,43 +10,13 @@ class History
 public:
     History();
 
-    bool empty() const
-    {
-        return _data.empty();
-    }
-
-    void push(const BoardState& data)
-    {
-        _data.push_back(data);
-    }
-
-    BoardState operator[](size_t i) const
-    {
-        return _data[i];
-    }
-
-    size_t size() const
-    {
-        return _data.size();
-    }
-
-    void clear()
-    {
-        _data.clear();
-    }
-
-    void pop()
-    {
-        if (!empty())
-        {
-            _data.pop_back();
-        }
-    }
-
-    BoardState top() const
-    {
-        return _data.back();
-    }
+    bool empty() const;
+    size_t size() const;
+    void push(const BoardState& data);
+    void clear();
+    void pop();
+    BoardState top() const;
+    BoardState operator[](size_t i) const;
 
 private:
     std::vector<BoardState> _data;
