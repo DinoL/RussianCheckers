@@ -27,6 +27,10 @@ set(COMMON_FILES
     ${INCLUDE_DIR}/boardstate.h
     ${SRC_DIR}/history.cpp
     ${INCLUDE_DIR}/history.h
+    ${SRC_DIR}/pdnparser.cpp
+    ${INCLUDE_DIR}/pdnparser.h
+    ${SRC_DIR}/pdn.cpp
+    ${INCLUDE_DIR}/pdn.h
 )
 
 set(APP_FILES

@@ -3,7 +3,6 @@
 
 #include <QObject>
 
-#include "direction.h"
 #include "checkerslogic.h"
 #include "history.h"
 
