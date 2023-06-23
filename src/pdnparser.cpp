@@ -10,8 +10,13 @@ PDN PdnParser::read(std::istream& s)
 
 void PdnParser::write(const PDN& data, std::ostream& s)
 {
-    for (const auto& p : data._moves)
+    for (int i = 0; i < data._moves.size(); ++i)
     {
-        s << p.first << ' ' << p.second << std::endl;
+        const auto& p = data._moves[i];
+        s << i+1 << ". " << p.first << '-' << p.second;
+        if (i != data._moves.size() -1)
+        {
+            s << ' ';
+        }
     }
 }
