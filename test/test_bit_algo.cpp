@@ -63,3 +63,14 @@ TEST(BitAlgoTests, MovePiece)
     EXPECT_EQ(alg::move_piece(s, 2, 6), s);
     EXPECT_EQ(alg::move_piece(s, 3, 6), 0b10'100'000'001'000'010);
 }
+
+TEST(BitAlgoTests, FirstSetCell)
+{
+    EXPECT_EQ(alg::first_set_cell(0), -1);
+    EXPECT_EQ(alg::first_set_cell(1), 0);
+    EXPECT_EQ(alg::first_set_cell(0xc), 2);
+    EXPECT_EQ(alg::first_set_cell(0xd1ac4000), 14);
+    EXPECT_EQ(alg::first_set_cell(0x04020000), 17);
+    EXPECT_EQ(alg::first_set_cell(0xff000000), 24);
+    EXPECT_EQ(alg::first_set_cell(0x80000000), 31);
+}

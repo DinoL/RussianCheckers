@@ -49,4 +49,19 @@ namespace alg
         return res;
     }
 
+    int first_set_cell(state_t s)
+    {
+        if (s == 0)
+            return -1;
+
+        state_t c = first_set_piece(s);
+        int k = 0;
+        while (c && (c % 2 == 0))
+        {
+            ++k;
+            c = c >> 1;
+        }
+        return k;
+    }
+
 }

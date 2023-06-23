@@ -14,6 +14,7 @@ namespace alg
     state_t add(state_t s, state_t r);
     state_t subtract(state_t s, state_t r);
     state_t move_piece(state_t s, int from, int to);
+    int first_set_cell(state_t s);
 
 }
 
