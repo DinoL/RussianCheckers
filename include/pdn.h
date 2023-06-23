@@ -13,7 +13,7 @@ public:
 
     static PDN from_history(const History& hist);
 
-    std::vector<std::pair<int, int>> _moves;
+    std::vector<std::vector<int>> _moves;
 };
 
 #endif // PDN_H

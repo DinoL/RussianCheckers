@@ -1,5 +1,8 @@
 #include "model.h"
 #include "bit_algo.h"
+#include "pdnparser.h"
+
+#include <fstream>
 
 MyModel::MyModel(QObject* parent)
 {
@@ -83,6 +86,12 @@ bool MyModel::whiteTurn() const
 
 void MyModel::reset_last_move()
 {
+    std::ofstream file("last_moves.pdn");
+    PdnParser parser;
+    parser.write(PDN::from_history(_history), file);
+    return;
+
+
     if (_history.size() < 2)
     {
         return;
