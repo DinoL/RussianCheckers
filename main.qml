@@ -260,6 +260,7 @@ ApplicationWindow {
                                 gameEnded.text = (player_name + " has lost the game")
                                 gameEnded.open()
                                 Model.restart()
+                                board.curTurn += 1
                             }
                         }
                         board.curTurn += 1

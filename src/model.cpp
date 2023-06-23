@@ -89,6 +89,7 @@ void MyModel::reset_last_move()
     }
     _history.pop();
     _logic.set_state(_history.top());
+    _activePiece = -1;
 }
 
 void MyModel::setActivePiece(int i_activePiece)
