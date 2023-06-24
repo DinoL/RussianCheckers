@@ -55,4 +55,30 @@ TEST(PdnTests, HistoryMoves)
     EXPECT_EQ(p._moves[3], move4);
 }
 
+TEST(PdnTests, HistoryJumpMoves)
+{
+    History h;
+    h.push(BoardState{0x800610, 0xd5420100, 0, 0x100, false, -1});
+    h.push(BoardState{0x800600, 0xd5420002, 0, 0x2, false, 1});
+    h.push(BoardState{0x800200, 0xd54a0000, 0, 0x80000, true, -1});
 
+    const PDN p = PDN::from_history(h);
+    const PDN::Move move{{8, 1, 19}, true};
+
+    EXPECT_EQ(p._moves.size(), 1);
+    EXPECT_EQ(p._moves.front(), move);
+}
+
+TEST(PdnTests, HistoryStraightJump)
+{
+    History h;
+    h.push(BoardState{0x08000200, 0x00000001, 0, 0x1, false, -1});
+    h.push(BoardState{0x08000000, 0x00040000, 0, 0x40000, false, 18});
+    h.push(BoardState{0x00000000, 0x80000000, 0, 0x80000000, true, -1});
+
+    const PDN p = PDN::from_history(h);
+    const PDN::Move move{{0, 18, 31}, true};
+
+    EXPECT_EQ(p._moves.size(), 1);
+    EXPECT_EQ(p._moves.front(), move);
+}
