@@ -13,12 +13,13 @@ void PdnParser::write(const PDN& data, std::ostream& s)
     for (int i = 0; i < data._moves.size(); ++i)
     {
         const auto& p = data._moves[i];
-        const char sep = p.size() > 2 ? 'x' : '-';
+        const char sep = p._is_eat ? 'x' : '-';
         s << i+1 << ". ";
-        for (int j = 0; j < p.size(); ++j)
+
+        for (int j = 0; j < p._cells.size(); ++j)
         {
-            s << p[j] + 1;
-            if (j != p.size() - 1)
+            s << p._cells[j] + 1;
+            if (j != p._cells.size() - 1)
             {
                 s << sep;
             }

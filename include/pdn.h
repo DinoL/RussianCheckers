@@ -11,9 +11,15 @@ class PDN
 public:
     PDN();
 
+    struct Move
+    {
+        std::vector<int> _cells;
+        bool _is_eat;
+    };
+
     static PDN from_history(const History& hist);
 
-    std::vector<std::vector<int>> _moves;
+    std::vector<Move> _moves;
 };
 
 #endif // PDN_H

@@ -9,6 +9,8 @@ PDN::PDN()
 PDN PDN::from_history(const History& hist)
 {
     PDN res;
+
+    PDN::Move cur_move;
     for (int i = 1; i < hist.size(); ++i)
     {
         const BoardState& prev = hist[i-1];
@@ -21,20 +23,25 @@ PDN PDN::from_history(const History& hist)
         const int cell_from = alg::first_set_cell(state_from);
         const int cell_to = alg::first_set_cell(state_to);
 
-        std::vector<int> move_cells;
-        move_cells.push_back(cell_from);
-
-        state_t between = (CheckersLogic::get_between(state_from, state_to)
-                          |CheckersLogic::get_between(state_to, state_from));
-        while (between)
+        const state_t between = (CheckersLogic::get_between(state_from, state_to)
+                          |      CheckersLogic::get_between(state_to, state_from));
+        if (cur_move._cells.empty())
         {
-            const int cell = alg::first_set_cell(between);
-            between ^= alg::to_state(cell);
-            move_cells.push_back(cell);
+            cur_move._cells.push_back(cell_from);
         }
-        move_cells.push_back(cell_to);
+        cur_move._cells.push_back(cell_to);
+        cur_move._is_eat = (between != 0);
 
-        res._moves.push_back(move_cells);
+        if (prev._white_turn != cur._white_turn)
+        {
+            res._moves.push_back(cur_move);
+            cur_move = PDN::Move();
+        }
     }
+    if (!cur_move._cells.empty())
+    {
+        res._moves.push_back(cur_move);
+    }
+
     return res;
 }
