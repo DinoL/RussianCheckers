@@ -30,7 +30,9 @@ public:
     Q_INVOKABLE bool piece_can_move_to(int piece, int cell) const;
     Q_INVOKABLE int activePiece() const;
     Q_INVOKABLE bool whiteTurn() const;
-    Q_INVOKABLE void reset_last_move();
+    Q_INVOKABLE void export_history();
+    Q_INVOKABLE void move_back();
+    Q_INVOKABLE void move_forward();
 
 public slots:
     Q_INVOKABLE void setActivePiece(int i_activePiece);
@@ -43,6 +45,7 @@ signals:
 private:
     bool _whiteTurn;
     int _activePiece;
+    int _curTurn;
 
     CheckersLogic _logic;
     History _history;

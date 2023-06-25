@@ -28,6 +28,11 @@ void History::clear()
     _data.clear();
 }
 
+void History::resize(size_t size)
+{
+    _data.resize(size);
+}
+
 void History::pop()
 {
     if (!empty())

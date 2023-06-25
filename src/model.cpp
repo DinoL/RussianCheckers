@@ -21,6 +21,7 @@ void MyModel::restart()
     _logic.reset();
     _whiteTurn = _logic.is_white_turn();
     _activePiece = -1;
+    _curTurn = 0;
 
     _history.clear();
     _history.push(_logic.state());
@@ -66,7 +67,12 @@ void MyModel::move_piece_to(int cell)
     _logic.move_piece(piece, cell);
     _whiteTurn = _logic.is_white_turn();
     _activePiece = _logic.eating_piece();
+    if (_curTurn != (_history.size() - 1))
+    {
+        _history.resize(_curTurn + 1);
+    }
     _history.push(_logic.state());
+    ++_curTurn;
 }
 
 bool MyModel::piece_can_move_to(int piece, int cell) const
@@ -84,20 +90,34 @@ bool MyModel::whiteTurn() const
     return _whiteTurn;
 }
 
-void MyModel::reset_last_move()
+void MyModel::export_history()
 {
     std::ofstream file("last_moves.pdn");
     PdnParser parser;
     parser.write(PDN::from_history(_history), file);
-    return;
+}
 
-
-    if (_history.size() < 2)
+void MyModel::move_back()
+{
+    if (_curTurn <= 0)
     {
         return;
     }
-    _history.pop();
-    _logic.set_state(_history.top());
+
+    --_curTurn;
+    _logic.set_state(_history[_curTurn]);
+    _activePiece = -1;
+}
+
+void MyModel::move_forward()
+{
+    if (_curTurn >= _history.size() - 1)
+    {
+        return;
+    }
+
+    ++_curTurn;
+    _logic.set_state(_history[_curTurn]);
     _activePiece = -1;
 }
 

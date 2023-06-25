@@ -15,6 +15,7 @@ public:
     size_t size() const;
     void push(const BoardState& data);
     void clear();
+    void resize(size_t size);
     void pop();
     BoardState top() const;
     BoardState operator[](size_t i) const;
