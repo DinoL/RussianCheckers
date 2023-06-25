@@ -4,6 +4,7 @@
 #include "boardstate.h"
 
 #include <vector>
+#include <cstddef>
 
 class History
 {
