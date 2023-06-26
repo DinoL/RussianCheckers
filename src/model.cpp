@@ -4,6 +4,8 @@
 
 #include <fstream>
 
+#include <QString>
+
 MyModel::MyModel(QObject* parent)
 {
     Q_UNUSED(parent);
@@ -90,9 +92,10 @@ bool MyModel::whiteTurn() const
     return _whiteTurn;
 }
 
-void MyModel::export_history()
+void MyModel::export_history(const QUrl& file_url) const
 {
-    std::ofstream file("last_moves.pdn");
+    std::ofstream file(
+        file_url.toDisplayString(QUrl::PreferLocalFile).toStdString());
     PdnParser parser;
     parser.write(PDN::from_history(_history), file);
 }

@@ -19,7 +19,7 @@ ApplicationWindow {
 
     GridLayout {
         id: gridLayout
-        rows: 2
+        rows: 3
         flow: GridLayout.TopToBottom
         anchors.fill: parent
 
@@ -128,17 +128,6 @@ ApplicationWindow {
                     }
                     font.pointSize: board.squareSize / 4
                     horizontalAlignment: Text.AlignHCenter
-                }
-
-                MouseArea {
-                    id: history_button;
-                    width: parent.width
-                    height: parent.height
-                    acceptedButtons: Qt.RightButton;
-
-                    onPressed: {
-                        Model.export_history()
-                    }
                 }
             }
 
@@ -297,6 +286,15 @@ ApplicationWindow {
         Button {
             Layout.fillHeight: true
             Layout.fillWidth: true
+            Layout.columnSpan: 2
+            text: "Export"
+            onClicked: {
+                exportHistoryDialog.open()
+            }
+        }
+        Button {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
             text: ">"
             onClicked: {
                 Model.move_forward()
@@ -304,4 +302,11 @@ ApplicationWindow {
             }
         }
     }
+
+    FileDialog {
+            id: exportHistoryDialog
+            defaultSuffix: "pdn"
+            fileMode: FileDialog.SaveFile
+            onAccepted: Model.export_history(selectedFile)
+        }
 }

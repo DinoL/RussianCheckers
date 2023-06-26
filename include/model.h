@@ -2,6 +2,7 @@
 #define MODEL_H
 
 #include <QObject>
+#include <QUrl>
 
 #include "checkerslogic.h"
 #include "history.h"
@@ -30,7 +31,7 @@ public:
     Q_INVOKABLE bool piece_can_move_to(int piece, int cell) const;
     Q_INVOKABLE int activePiece() const;
     Q_INVOKABLE bool whiteTurn() const;
-    Q_INVOKABLE void export_history();
+    Q_INVOKABLE void export_history(const QUrl& file_url) const;
     Q_INVOKABLE void move_back();
     Q_INVOKABLE void move_forward();
 
