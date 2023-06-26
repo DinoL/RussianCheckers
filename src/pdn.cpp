@@ -69,3 +69,24 @@ bool PDN::Move::operator==(const Move& other) const
     return _cells == other._cells
            && _is_eat == other._is_eat;
 }
+
+bool PDN::Move::valid() const
+{
+    if (_cells.size() < 2)
+    {
+        return false;
+    }
+    if (_cells.size() > 2 && !_is_eat)
+    {
+        return false;
+    }
+    for (int c : _cells)
+    {
+        if (c < 0 || c > 31)
+        {
+            return false;
+        }
+    }
+
+    return true;
+}

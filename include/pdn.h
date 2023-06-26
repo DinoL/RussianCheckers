@@ -17,6 +17,7 @@ public:
         bool _is_eat;
 
         bool operator==(const PDN::Move& other) const;
+        bool valid() const;
     };
 
     static PDN from_history(const History& hist);

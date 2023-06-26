@@ -1,9 +1,11 @@
 #include "pdnparser.h"
 
+#include <iostream>
+
 PdnParser::PdnParser()
 {}
 
-PDN PdnParser::read(std::istream& s)
+PDN read_numeric(std::istream& s)
 {
     PDN pdn;
 
@@ -24,16 +26,86 @@ PDN PdnParser::read(std::istream& s)
         while (s && s.peek() != ' ')
         {
             s >> sep >> to;
-            cells.push_back(to - 1);
+            if (s)
+            {
+                cells.push_back(to - 1);
+            }
         }
 
-        pdn._moves.push_back(PDN::Move{cells, is_eat});
+        const PDN::Move move{cells, is_eat};
+        if (move.valid())
+        {
+            pdn._moves.push_back(move);
+
+            std::cout << "Add move: ";
+            for (int c : move._cells)
+            {
+                std::cout << c << ' ';
+            }
+            std::cout << std::endl;
+        }
     }
 
     return pdn;
 }
 
-void PdnParser::write(const PDN& data, std::ostream& s)
+PDN::Move move_from_string(const std::string& s)
+{
+    const bool is_eat = (s.find('x') != std::string::npos);
+
+    int cells_cnt = (s.size() / 3 + 1);
+    std::vector<int> cells;
+    for (int i = 0; i < cells_cnt; ++i)
+    {
+        cells.push_back(PdnParser::cell_from_string(s.substr(3*i, 2), CellFormat::ALPHANUMERIC));
+    }
+    return PDN::Move{cells, is_eat};
+}
+
+PDN read_alphanumeric(std::istream& s)
+{
+    PDN pdn;
+
+    int cur_turn;
+    char dot;
+
+    std::string cells_str;
+
+    while (s)
+    {
+        s >> cur_turn >> dot >> cells_str;
+
+        const PDN::Move move = move_from_string(cells_str);
+        if (move.valid())
+        {
+            pdn._moves.push_back(move);
+
+            std::cout << "Add move: ";
+            for (int c : move._cells)
+            {
+                std::cout << c << ' ';
+            }
+            std::cout << std::endl;
+        }
+    }
+
+    return pdn;
+}
+
+PDN PdnParser::read(std::istream& s, CellFormat format)
+{
+    switch(format)
+    {
+    case CellFormat::NUMERIC:
+        return read_numeric(s);
+    case CellFormat::ALPHANUMERIC:
+        return read_alphanumeric(s);
+    }
+    return PDN();
+}
+
+void PdnParser::write(const PDN& data, std::ostream& s,
+                      CellFormat format /*= CellFormat::NUMERIC*/)
 {
     for (int i = 0; i < data._moves.size(); ++i)
     {
@@ -43,7 +115,7 @@ void PdnParser::write(const PDN& data, std::ostream& s)
 
         for (int j = 0; j < p._cells.size(); ++j)
         {
-            s << p._cells[j] + 1;
+            s << format_cell(p._cells[j], format);
             if (j != p._cells.size() - 1)
             {
                 s << sep;
@@ -55,3 +127,36 @@ void PdnParser::write(const PDN& data, std::ostream& s)
         }
     }
 }
+
+std::string PdnParser::format_cell(int cell, CellFormat format)
+{
+    switch(format)
+    {
+    case CellFormat::NUMERIC:
+        return std::to_string(cell + 1);
+    case CellFormat::ALPHANUMERIC:
+        const bool even_row = ((cell / 4) % 2 == 0);
+        char col = even_row ? "aceg"[cell % 4]
+                            : "bdfh"[cell % 4];
+        return col + std::to_string(cell / 4 + 1);
+    }
+    return "";
+}
+
+int PdnParser::cell_from_string(const std::string& s, CellFormat format)
+{
+    switch(format)
+    {
+    case CellFormat::NUMERIC:
+        return std::stoi(s) - 1;
+    case CellFormat::ALPHANUMERIC:
+        const char col_id = s[0];
+        const int row = s[1] - '1';
+        const bool even_row = (row % 2 == 0);
+        const int col = even_row ? (col_id - 'a') / 2
+                                 : (col_id - 'a' - 1) / 2;
+        return row * 4 + col;
+    }
+    return -1;
+}
+
