@@ -19,7 +19,7 @@ ApplicationWindow {
 
     GridLayout {
         id: gridLayout
-        rows: 3
+        rows: 4
         flow: GridLayout.TopToBottom
         anchors.fill: parent
 
@@ -295,6 +295,15 @@ ApplicationWindow {
         Button {
             Layout.fillHeight: true
             Layout.fillWidth: true
+            Layout.columnSpan: 2
+            text: "Import"
+            onClicked: {
+                importHistoryDialog.open()
+            }
+        }
+        Button {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
             text: ">"
             onClicked: {
                 Model.move_forward()
@@ -304,9 +313,16 @@ ApplicationWindow {
     }
 
     FileDialog {
-            id: exportHistoryDialog
-            defaultSuffix: "pdn"
-            fileMode: FileDialog.SaveFile
-            onAccepted: Model.export_history(selectedFile)
-        }
+        id: exportHistoryDialog
+        defaultSuffix: "pdn"
+        fileMode: FileDialog.SaveFile
+        onAccepted: Model.export_history(selectedFile)
+    }
+
+    FileDialog {
+        id: importHistoryDialog
+        defaultSuffix: "pdn"
+        fileMode: FileDialog.OpenFile
+        onAccepted: Model.import_history(selectedFile)
+    }
 }

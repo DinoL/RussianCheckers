@@ -45,3 +45,27 @@ PDN PDN::from_history(const History& hist)
 
     return res;
 }
+
+History PDN::to_history() const
+{
+    History history;
+    CheckersLogic logic;
+
+    history.push(logic.state());
+
+    for (const PDN::Move& move : _moves)
+    {
+        for (int i = 1; i < move._cells.size(); ++i)
+        {
+            logic.move_piece(move._cells[i-1], move._cells[i]);
+            history.push(logic.state());
+        }
+    }
+    return history;
+}
+
+bool PDN::Move::operator==(const Move& other) const
+{
+    return _cells == other._cells
+           && _is_eat == other._is_eat;
+}

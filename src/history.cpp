@@ -3,6 +3,16 @@
 History::History()
 {}
 
+History::History(const History& other)
+    : _data(other._data)
+{}
+
+History& History::operator=(const History& other)
+{
+    _data = other._data;
+    return *this;
+}
+
 bool History::empty() const
 {
     return _data.empty();

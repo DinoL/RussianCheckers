@@ -32,6 +32,7 @@ public:
     Q_INVOKABLE int activePiece() const;
     Q_INVOKABLE bool whiteTurn() const;
     Q_INVOKABLE void export_history(const QUrl& file_url) const;
+    Q_INVOKABLE void import_history(const QUrl& file_url);
     Q_INVOKABLE void move_back();
     Q_INVOKABLE void move_forward();
 

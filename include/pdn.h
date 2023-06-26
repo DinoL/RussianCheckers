@@ -16,14 +16,11 @@ public:
         std::vector<int> _cells;
         bool _is_eat;
 
-        bool operator==(const PDN::Move& other) const
-        {
-            return _cells == other._cells
-                && _is_eat == other._is_eat;
-        }
+        bool operator==(const PDN::Move& other) const;
     };
 
     static PDN from_history(const History& hist);
+    History to_history() const;
 
     std::vector<Move> _moves;
 };

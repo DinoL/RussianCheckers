@@ -100,6 +100,18 @@ void MyModel::export_history(const QUrl& file_url) const
     parser.write(PDN::from_history(_history), file);
 }
 
+void MyModel::import_history(const QUrl& file_url)
+{
+    std::ifstream file(
+        file_url.toDisplayString(QUrl::PreferLocalFile).toStdString());
+    PdnParser parser;
+    const PDN pdn = parser.read(file);
+    _history = pdn.to_history();
+    _logic.set_state(_history[0]);
+    _activePiece = -1;
+    _curTurn = 0;
+}
+
 void MyModel::move_back()
 {
     if (_curTurn <= 0)

@@ -5,7 +5,32 @@ PdnParser::PdnParser()
 
 PDN PdnParser::read(std::istream& s)
 {
-    return PDN();
+    PDN pdn;
+
+    int cur_turn;
+    char dot;
+    char sep;
+
+    int from;
+    int to;
+
+    while (s)
+    {
+        s >> cur_turn >> dot >> from >> sep >> to;
+
+        const bool is_eat = (sep == 'x');
+        std::vector<int> cells = {from - 1, to - 1};
+
+        while (s && s.peek() != ' ')
+        {
+            s >> sep >> to;
+            cells.push_back(to - 1);
+        }
+
+        pdn._moves.push_back(PDN::Move{cells, is_eat});
+    }
+
+    return pdn;
 }
 
 void PdnParser::write(const PDN& data, std::ostream& s)

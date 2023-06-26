@@ -10,6 +10,8 @@ class History
 {
 public:
     History();
+    History(const History& other);
+    History& operator=(const History& other);
 
     bool empty() const;
     size_t size() const;
