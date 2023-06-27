@@ -36,13 +36,31 @@ PDN read_numeric(std::istream& s)
         if (move.valid())
         {
             pdn._moves.push_back(move);
+        }
 
-            std::cout << "Add move: ";
-            for (int c : move._cells)
+        if (!s)
+        {
+            continue;
+        }
+
+        s >> from >> sep >> to;
+
+        const bool is_eat2 = (sep == 'x');
+        cells = {from - 1, to - 1};
+
+        while (s && s.peek() != ' ')
+        {
+            s >> sep >> to;
+            if (s)
             {
-                std::cout << c << ' ';
+                cells.push_back(to - 1);
             }
-            std::cout << std::endl;
+        }
+
+        const PDN::Move move2{cells, is_eat2};
+        if (move2.valid())
+        {
+            pdn._moves.push_back(move2);
         }
     }
 
@@ -66,26 +84,23 @@ PDN read_alphanumeric(std::istream& s)
 {
     PDN pdn;
 
-    int cur_turn;
-    char dot;
-
-    std::string cells_str;
+    std::string cur_turn;
+    std::string white_move_str;
+    std::string black_move_str;
 
     while (s)
     {
-        s >> cur_turn >> dot >> cells_str;
+        s >> cur_turn >> white_move_str >> black_move_str;
 
-        const PDN::Move move = move_from_string(cells_str);
-        if (move.valid())
+        const PDN::Move white_move = move_from_string(white_move_str);
+        const PDN::Move black_move = move_from_string(black_move_str);
+        if (white_move.valid())
         {
-            pdn._moves.push_back(move);
-
-            std::cout << "Add move: ";
-            for (int c : move._cells)
-            {
-                std::cout << c << ' ';
-            }
-            std::cout << std::endl;
+            pdn._moves.push_back(white_move);
+        }
+        if (black_move.valid())
+        {
+            pdn._moves.push_back(black_move);
         }
     }
 
@@ -111,8 +126,10 @@ void PdnParser::write(const PDN& data, std::ostream& s,
     {
         const auto& p = data._moves[i];
         const char sep = p._is_eat ? 'x' : '-';
-        s << i+1 << ". ";
-
+        if (i % 2 == 0)
+        {
+            s << i/2 + 1 << ". ";
+        }
         for (int j = 0; j < p._cells.size(); ++j)
         {
             s << format_cell(p._cells[j], format);
