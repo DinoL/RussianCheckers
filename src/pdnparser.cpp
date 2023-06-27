@@ -1,86 +1,6 @@
 #include "pdnparser.h"
 
-#include <iostream>
-
-PdnParser::PdnParser()
-{}
-
-PDN read_numeric(std::istream& s)
-{
-    PDN pdn;
-
-    int cur_turn;
-    char dot;
-    char sep;
-
-    int from;
-    int to;
-
-    while (s)
-    {
-        s >> cur_turn >> dot >> from >> sep >> to;
-
-        const bool is_eat = (sep == 'x');
-        std::vector<int> cells = {from - 1, to - 1};
-
-        while (s && s.peek() != ' ')
-        {
-            s >> sep >> to;
-            if (s)
-            {
-                cells.push_back(to - 1);
-            }
-        }
-
-        const PDN::Move move{cells, is_eat};
-        if (move.valid())
-        {
-            pdn._moves.push_back(move);
-        }
-
-        if (!s)
-        {
-            continue;
-        }
-
-        s >> from >> sep >> to;
-
-        const bool is_eat2 = (sep == 'x');
-        cells = {from - 1, to - 1};
-
-        while (s && s.peek() != ' ')
-        {
-            s >> sep >> to;
-            if (s)
-            {
-                cells.push_back(to - 1);
-            }
-        }
-
-        const PDN::Move move2{cells, is_eat2};
-        if (move2.valid())
-        {
-            pdn._moves.push_back(move2);
-        }
-    }
-
-    return pdn;
-}
-
-PDN::Move move_from_string(const std::string& s)
-{
-    const bool is_eat = (s.find('x') != std::string::npos);
-
-    int cells_cnt = (s.size() / 3 + 1);
-    std::vector<int> cells;
-    for (int i = 0; i < cells_cnt; ++i)
-    {
-        cells.push_back(PdnParser::cell_from_string(s.substr(3*i, 2), CellFormat::ALPHANUMERIC));
-    }
-    return PDN::Move{cells, is_eat};
-}
-
-PDN read_alphanumeric(std::istream& s)
+PDN PdnParser::read(std::istream& s, CellFormat format)
 {
     PDN pdn;
 
@@ -92,8 +12,8 @@ PDN read_alphanumeric(std::istream& s)
     {
         s >> cur_turn >> white_move_str >> black_move_str;
 
-        const PDN::Move white_move = move_from_string(white_move_str);
-        const PDN::Move black_move = move_from_string(black_move_str);
+        const PDN::Move white_move = move_from_string(white_move_str, format);
+        const PDN::Move black_move = move_from_string(black_move_str, format);
         if (white_move.valid())
         {
             pdn._moves.push_back(white_move);
@@ -107,45 +27,26 @@ PDN read_alphanumeric(std::istream& s)
     return pdn;
 }
 
-PDN PdnParser::read(std::istream& s, CellFormat format)
+void PdnParser::write(const PDN& data, std::ostream& s, CellFormat format)
 {
-    switch(format)
+    const auto& moves = data._moves;
+    for (int i = 0; i < moves.size(); ++i)
     {
-    case CellFormat::NUMERIC:
-        return read_numeric(s);
-    case CellFormat::ALPHANUMERIC:
-        return read_alphanumeric(s);
-    }
-    return PDN();
-}
-
-void PdnParser::write(const PDN& data, std::ostream& s,
-                      CellFormat format /*= CellFormat::NUMERIC*/)
-{
-    for (int i = 0; i < data._moves.size(); ++i)
-    {
-        const auto& p = data._moves[i];
-        const char sep = p._is_eat ? 'x' : '-';
         if (i % 2 == 0)
         {
             s << i/2 + 1 << ". ";
         }
-        for (int j = 0; j < p._cells.size(); ++j)
-        {
-            s << format_cell(p._cells[j], format);
-            if (j != p._cells.size() - 1)
-            {
-                s << sep;
-            }
-        }
-        if (i != data._moves.size() -1)
+
+        s << move_to_string(moves[i], format);
+
+        if (i != moves.size() - 1)
         {
             s << ' ';
         }
     }
 }
 
-std::string PdnParser::format_cell(int cell, CellFormat format)
+std::string PdnParser::cell_to_string(int cell, CellFormat format)
 {
     switch(format)
     {
@@ -177,3 +78,31 @@ int PdnParser::cell_from_string(const std::string& s, CellFormat format)
     return -1;
 }
 
+std::string PdnParser::move_to_string(const PDN::Move& move, CellFormat format)
+{
+    std::string result;
+    const auto& cells = move._cells;
+    const char sep = move._is_eat ? 'x' : '-';
+    for (int i = 0; i < cells.size(); ++i)
+    {
+        result += cell_to_string(cells[i], format);
+        if (i != cells.size() - 1)
+        {
+            result += sep;
+        }
+    }
+    return result;
+}
+
+PDN::Move PdnParser::move_from_string(const std::string& s, CellFormat format)
+{
+    const bool is_eat = (s.find('x') != std::string::npos);
+
+    int cells_cnt = (s.size() / 3 + 1);
+    std::vector<int> cells;
+    for (int i = 0; i < cells_cnt; ++i)
+    {
+        cells.push_back(PdnParser::cell_from_string(s.substr(3*i, 2), format));
+    }
+    return PDN::Move{cells, is_eat};
+}

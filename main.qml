@@ -299,6 +299,7 @@ ApplicationWindow {
             text: "Import"
             onClicked: {
                 importHistoryDialog.open()
+                board.curTurn = 0;
             }
         }
         Button {
