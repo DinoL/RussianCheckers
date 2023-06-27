@@ -1,7 +1,8 @@
 #include "pdnparser.h"
 
-PDN PdnParser::read(std::istream& s, CellFormat format)
+PDN PdnParser::read(std::istream& s) const
 {
+    const MoveParser mp(_format);
     PDN pdn;
 
     std::string cur_turn;
@@ -12,8 +13,8 @@ PDN PdnParser::read(std::istream& s, CellFormat format)
     {
         s >> cur_turn >> white_move_str >> black_move_str;
 
-        const PDN::Move white_move = move_from_string(white_move_str, format);
-        const PDN::Move black_move = move_from_string(black_move_str, format);
+        const PDN::Move white_move = mp.decode(white_move_str);
+        const PDN::Move black_move = mp.decode(black_move_str);
         if (white_move.valid())
         {
             pdn._moves.push_back(white_move);
@@ -27,8 +28,9 @@ PDN PdnParser::read(std::istream& s, CellFormat format)
     return pdn;
 }
 
-void PdnParser::write(const PDN& data, std::ostream& s, CellFormat format)
+void PdnParser::write(const PDN& data, std::ostream& s) const
 {
+    const MoveParser mp(_format);
     const auto& moves = data._moves;
     for (int i = 0; i < moves.size(); ++i)
     {
@@ -37,7 +39,7 @@ void PdnParser::write(const PDN& data, std::ostream& s, CellFormat format)
             s << i/2 + 1 << ". ";
         }
 
-        s << move_to_string(moves[i], format);
+        s << mp.encode(moves[i]);
 
         if (i != moves.size() - 1)
         {
@@ -46,9 +48,9 @@ void PdnParser::write(const PDN& data, std::ostream& s, CellFormat format)
     }
 }
 
-std::string PdnParser::cell_to_string(int cell, CellFormat format)
+std::string CellParser::encode(int cell) const
 {
-    switch(format)
+    switch(_format)
     {
     case CellFormat::NUMERIC:
         return std::to_string(cell + 1);
@@ -61,9 +63,9 @@ std::string PdnParser::cell_to_string(int cell, CellFormat format)
     return "";
 }
 
-int PdnParser::cell_from_string(const std::string& s, CellFormat format)
+int CellParser::decode(const std::string& s) const
 {
-    switch(format)
+    switch(_format)
     {
     case CellFormat::NUMERIC:
         return std::stoi(s) - 1;
@@ -78,14 +80,15 @@ int PdnParser::cell_from_string(const std::string& s, CellFormat format)
     return -1;
 }
 
-std::string PdnParser::move_to_string(const PDN::Move& move, CellFormat format)
+std::string MoveParser::encode(const PDN::Move& move) const
 {
+    const CellParser cp(_format);
     std::string result;
     const auto& cells = move._cells;
     const char sep = move._is_eat ? 'x' : '-';
     for (int i = 0; i < cells.size(); ++i)
     {
-        result += cell_to_string(cells[i], format);
+        result += cp.encode(cells[i]);
         if (i != cells.size() - 1)
         {
             result += sep;
@@ -94,15 +97,16 @@ std::string PdnParser::move_to_string(const PDN::Move& move, CellFormat format)
     return result;
 }
 
-PDN::Move PdnParser::move_from_string(const std::string& s, CellFormat format)
+PDN::Move MoveParser::decode(const std::string& s) const
 {
+    const CellParser cp(_format);
     const bool is_eat = (s.find('x') != std::string::npos);
 
     int cells_cnt = (s.size() / 3 + 1);
     std::vector<int> cells;
     for (int i = 0; i < cells_cnt; ++i)
     {
-        cells.push_back(PdnParser::cell_from_string(s.substr(3*i, 2), format));
+        cells.push_back(cp.decode(s.substr(3*i, 2)));
     }
     return PDN::Move{cells, is_eat};
 }

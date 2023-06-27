@@ -12,15 +12,43 @@ enum class CellFormat
     ALPHANUMERIC
 };
 
+class CellParser
+{
+public:
+    CellParser(CellFormat format) : _format(format)
+    {}
+
+    std::string encode(int cell) const;
+    int decode(const std::string& s) const;
+
+private:
+    CellFormat _format;
+};
+
+class MoveParser
+{
+public:
+    MoveParser(CellFormat format) : _format(format)
+    {}
+
+    std::string encode(const PDN::Move& move) const;
+    PDN::Move decode(const std::string& s) const;
+
+private:
+    CellFormat _format;
+};
+
 class PdnParser
 {
 public:
-    static PDN read(std::istream& s, CellFormat format);
-    static void write(const PDN& data, std::ostream& s, CellFormat format);
-    static std::string cell_to_string(int cell, CellFormat format);
-    static int cell_from_string(const std::string& s, CellFormat format);
-    static std::string move_to_string(const PDN::Move& move, CellFormat format);
-    static PDN::Move move_from_string(const std::string& s, CellFormat format);
+    PdnParser(CellFormat format) : _format(format)
+    {}
+
+    PDN read(std::istream& s) const;
+    void write(const PDN& data, std::ostream& s) const;
+
+private:
+    CellFormat _format;
 };
 
 #endif // PDNPARSER_H

@@ -96,14 +96,16 @@ void MyModel::export_history(const QUrl& file_url) const
 {
     std::ofstream file(
         file_url.toDisplayString(QUrl::PreferLocalFile).toStdString());
-    PdnParser::write(PDN::from_history(_history), file, CellFormat::ALPHANUMERIC);
+    const PdnParser parser(CellFormat::ALPHANUMERIC);
+    parser.write(PDN::from_history(_history), file);
 }
 
 void MyModel::import_history(const QUrl& file_url)
 {
     std::ifstream file(
         file_url.toDisplayString(QUrl::PreferLocalFile).toStdString());
-    const PDN pdn = PdnParser::read(file, CellFormat::ALPHANUMERIC);
+    const PdnParser parser(CellFormat::ALPHANUMERIC);
+    const PDN pdn = parser.read(file);
     _history = pdn.to_history();
     _logic.set_state(_history[0]);
     _activePiece = -1;
