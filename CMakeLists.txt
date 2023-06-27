@@ -25,6 +25,12 @@ set(COMMON_FILES
     ${INCLUDE_DIR}/bit_algo.h
     ${SRC_DIR}/boardstate.cpp
     ${INCLUDE_DIR}/boardstate.h
+    ${SRC_DIR}/history.cpp
+    ${INCLUDE_DIR}/history.h
+    ${SRC_DIR}/pdnparser.cpp
+    ${INCLUDE_DIR}/pdnparser.h
+    ${SRC_DIR}/pdn.cpp
+    ${INCLUDE_DIR}/pdn.h
 )
 
 set(APP_FILES
@@ -71,6 +77,9 @@ add_executable(runUnitTests
     ${TEST_DIR}/test_bit_algo.cpp
     ${TEST_DIR}/test_direction.cpp
     ${TEST_DIR}/test_board_state.cpp
+    ${TEST_DIR}/test_history.cpp
+    ${TEST_DIR}/test_pdn.cpp
+    ${TEST_DIR}/test_pdn_parser.cpp
 )
 target_link_libraries(runUnitTests gtest gtest_main checkersLibrary)
 

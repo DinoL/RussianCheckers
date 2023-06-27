@@ -2,9 +2,10 @@
 #define MODEL_H
 
 #include <QObject>
+#include <QUrl>
 
-#include "direction.h"
 #include "checkerslogic.h"
+#include "history.h"
 
 using state_t = uint32_t;
 
@@ -30,6 +31,10 @@ public:
     Q_INVOKABLE bool piece_can_move_to(int piece, int cell) const;
     Q_INVOKABLE int activePiece() const;
     Q_INVOKABLE bool whiteTurn() const;
+    Q_INVOKABLE void export_history(const QUrl& file_url) const;
+    Q_INVOKABLE void import_history(const QUrl& file_url);
+    Q_INVOKABLE void move_back();
+    Q_INVOKABLE void move_forward();
 
 public slots:
     Q_INVOKABLE void setActivePiece(int i_activePiece);
@@ -42,8 +47,10 @@ signals:
 private:
     bool _whiteTurn;
     int _activePiece;
+    int _curTurn;
 
     CheckersLogic _logic;
+    History _history;
 };
 
 #endif // MODEL_H

@@ -1,5 +1,10 @@
 #include "model.h"
 #include "bit_algo.h"
+#include "pdnparser.h"
+
+#include <fstream>
+
+#include <QString>
 
 MyModel::MyModel(QObject* parent)
 {
@@ -18,6 +23,10 @@ void MyModel::restart()
     _logic.reset();
     _whiteTurn = _logic.is_white_turn();
     _activePiece = -1;
+    _curTurn = 0;
+
+    _history.clear();
+    _history.push(_logic.state());
 }
 
 bool MyModel::has_any_piece(int cell) const
@@ -60,6 +69,12 @@ void MyModel::move_piece_to(int cell)
     _logic.move_piece(piece, cell);
     _whiteTurn = _logic.is_white_turn();
     _activePiece = _logic.eating_piece();
+    if (_curTurn != (_history.size() - 1))
+    {
+        _history.resize(_curTurn + 1);
+    }
+    _history.push(_logic.state());
+    ++_curTurn;
 }
 
 bool MyModel::piece_can_move_to(int piece, int cell) const
@@ -75,6 +90,50 @@ int MyModel::activePiece() const
 bool MyModel::whiteTurn() const
 {
     return _whiteTurn;
+}
+
+void MyModel::export_history(const QUrl& file_url) const
+{
+    std::ofstream file(
+        file_url.toDisplayString(QUrl::PreferLocalFile).toStdString());
+    const PdnParser parser(CellFormat::ALPHANUMERIC);
+    parser.write(PDN::from_history(_history), file);
+}
+
+void MyModel::import_history(const QUrl& file_url)
+{
+    std::ifstream file(
+        file_url.toDisplayString(QUrl::PreferLocalFile).toStdString());
+    const PdnParser parser(CellFormat::ALPHANUMERIC);
+    const PDN pdn = parser.read(file);
+    _history = pdn.to_history();
+    _logic.set_state(_history[0]);
+    _activePiece = -1;
+    _curTurn = 0;
+}
+
+void MyModel::move_back()
+{
+    if (_curTurn <= 0)
+    {
+        return;
+    }
+
+    --_curTurn;
+    _logic.set_state(_history[_curTurn]);
+    _activePiece = -1;
+}
+
+void MyModel::move_forward()
+{
+    if (_curTurn >= _history.size() - 1)
+    {
+        return;
+    }
+
+    ++_curTurn;
+    _logic.set_state(_history[_curTurn]);
+    _activePiece = -1;
 }
 
 void MyModel::setActivePiece(int i_activePiece)
