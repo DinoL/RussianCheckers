@@ -79,6 +79,7 @@ add_executable(runUnitTests
     ${TEST_DIR}/test_board_state.cpp
     ${TEST_DIR}/test_history.cpp
     ${TEST_DIR}/test_pdn.cpp
+    ${TEST_DIR}/test_pdn_parser.cpp
 )
 target_link_libraries(runUnitTests gtest gtest_main checkersLibrary)
 

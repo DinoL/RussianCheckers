@@ -1,5 +1,8 @@
 #include "pdnparser.h"
 
+#include <sstream>
+#include <string>
+
 PDN PdnParser::read(std::istream& s) const
 {
     const MoveParser mp(_format);
@@ -101,12 +104,16 @@ PDN::Move MoveParser::decode(const std::string& s) const
 {
     const CellParser cp(_format);
     const bool is_eat = (s.find('x') != std::string::npos);
+    const char sep = is_eat ? 'x' : '-';
 
-    int cells_cnt = (s.size() / 3 + 1);
+    std::stringstream ss(s);
+    std::string item;
+
     std::vector<int> cells;
-    for (int i = 0; i < cells_cnt; ++i)
+    while(std::getline(ss, item, sep))
     {
-        cells.push_back(cp.decode(s.substr(3*i, 2)));
+        cells.push_back(cp.decode(item));
     }
+
     return PDN::Move{cells, is_eat};
 }

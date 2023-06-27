@@ -13,6 +13,12 @@ public:
 
     struct Move
     {
+        Move() = default;
+        Move(const std::vector<int>& cells, bool is_eat)
+            : _cells(cells)
+            , _is_eat(is_eat)
+        {}
+
         std::vector<int> _cells;
         bool _is_eat;
 
