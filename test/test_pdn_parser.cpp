@@ -3,6 +3,8 @@
 #include "pdnparser.h"
 #include "pdn.h"
 
+#include <sstream>
+
 TEST(CellParserTests, CellParserEncodeNumeric)
 {
     const CellParser parser(CellFormat::NUMERIC);
@@ -97,4 +99,124 @@ TEST(MoveParserTests, MoveParserDecodeEatAlphanumeric)
     EXPECT_EQ(parser.decode("f4xh2"), PDN::Move({14, 7}, true));
     EXPECT_EQ(parser.decode("b4xe7xg5"), PDN::Move({12, 26, 19}, true));
     EXPECT_EQ(parser.decode("b8xg3xe1xa5"), PDN::Move({28, 11, 2, 16}, true));
+}
+
+TEST(PdnParserTests, EmptyWriteNumeric)
+{
+    const PdnParser parser(CellFormat::NUMERIC);
+    const PDN pdn;
+    std::ostringstream oss;
+    parser.write(pdn, oss);
+    EXPECT_EQ(oss.str(), "");
+}
+
+TEST(PdnParserTests, EmptyReadNumeric)
+{
+    const PdnParser parser(CellFormat::NUMERIC);
+    std::string s = "";
+    std::istringstream iss(s);
+    const PDN pdn = parser.read(iss);
+    EXPECT_EQ(pdn._moves, PDN()._moves);
+}
+
+TEST(PdnParserTests, EmptyWriteAlphanumeric)
+{
+    const PdnParser parser(CellFormat::ALPHANUMERIC);
+    const PDN pdn;
+    std::ostringstream oss;
+    parser.write(pdn, oss);
+    EXPECT_EQ(oss.str(), "");
+}
+
+TEST(PdnParserTests, EmptyReadAlphanumeric)
+{
+    const PdnParser parser(CellFormat::ALPHANUMERIC);
+    std::string s = "";
+    std::istringstream iss(s);
+    const PDN pdn = parser.read(iss);
+    EXPECT_EQ(pdn._moves, PDN()._moves);
+}
+
+TEST(PdnParserTests, WriteNumeric)
+{
+    const PdnParser parser(CellFormat::NUMERIC);
+    PDN pdn;
+    std::vector<PDN::Move> moves =
+    {
+        PDN::Move{{11, 15}, false},
+        PDN::Move{{22, 19}, false},
+        PDN::Move{{15, 22}, true},
+        PDN::Move{{27, 18}, true},
+        PDN::Move{{9, 12}, false},
+        PDN::Move{{20, 17}, false},
+        PDN::Move{{10, 13}, false},
+        PDN::Move{{18, 9, 16}, true},
+    };
+    pdn._moves = moves;
+    std::ostringstream oss;
+    parser.write(pdn, oss);
+    EXPECT_EQ(oss.str(), "1. 12-16 23-20 2. 16x23 28x19 "
+                         "3. 10-13 21-18 4. 11-14 19x10x17");
+}
+
+TEST(PdnParserTests, ReadNumeric)
+{
+    const PdnParser parser(CellFormat::NUMERIC);
+    std::vector<PDN::Move> moves =
+    {
+        PDN::Move{{11, 15}, false},
+        PDN::Move{{22, 19}, false},
+        PDN::Move{{15, 22}, true},
+        PDN::Move{{27, 18}, true},
+        PDN::Move{{9, 12}, false},
+        PDN::Move{{20, 17}, false},
+        PDN::Move{{10, 13}, false},
+        PDN::Move{{18, 9, 16}, true},
+    };
+    std::istringstream iss("1. 12-16 23-20 2. 16x23 28x19 "
+                           "3. 10-13 21-18 4. 11-14 19x10x17");
+    const PDN pdn = parser.read(iss);
+    EXPECT_EQ(pdn._moves, moves);
+}
+
+TEST(PdnParserTests, WriteAlphanumeric)
+{
+    const PdnParser parser(CellFormat::ALPHANUMERIC);
+    PDN pdn;
+    std::vector<PDN::Move> moves =
+    {
+        PDN::Move{{11, 15}, false},
+        PDN::Move{{22, 19}, false},
+        PDN::Move{{15, 22}, true},
+        PDN::Move{{27, 18}, true},
+        PDN::Move{{9, 12}, false},
+        PDN::Move{{20, 17}, false},
+        PDN::Move{{10, 13}, false},
+        PDN::Move{{18, 9, 16}, true},
+    };
+    pdn._moves = moves;
+    std::ostringstream oss;
+    parser.write(pdn, oss);
+    EXPECT_EQ(oss.str(), "1. g3-h4 f6-g5 2. h4xf6 g7xe5 "
+                         "3. c3-b4 b6-c5 4. e3-d4 e5xc3xa5");
+}
+
+TEST(PdnParserTests, ReadAlphanumeric)
+{
+    const PdnParser parser(CellFormat::ALPHANUMERIC);
+    std::vector<PDN::Move> moves =
+    {
+        PDN::Move{{11, 15}, false},
+        PDN::Move{{22, 19}, false},
+        PDN::Move{{15, 22}, true},
+        PDN::Move{{27, 18}, true},
+        PDN::Move{{9, 12}, false},
+        PDN::Move{{20, 17}, false},
+        PDN::Move{{10, 13}, false},
+        PDN::Move{{18, 9, 16}, true},
+    };
+    std::istringstream iss("1. g3-h4 f6-g5 2. h4xf6 g7xe5 "
+                           "3. c3-b4 b6-c5 4. e3-d4 e5xc3xa5");
+    const PDN pdn = parser.read(iss);
+    EXPECT_EQ(pdn._moves, moves);
 }

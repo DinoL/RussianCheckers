@@ -12,7 +12,7 @@ PDN PdnParser::read(std::istream& s) const
     std::string white_move_str;
     std::string black_move_str;
 
-    while (s)
+    while (s.good())
     {
         s >> cur_turn >> white_move_str >> black_move_str;
 
