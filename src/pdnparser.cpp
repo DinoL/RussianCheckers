@@ -39,7 +39,7 @@ void PdnParser::write(const PDN& data, std::ostream& s) const
     {
         if (i % 2 == 0)
         {
-            s << i/2 + 1 << ". ";
+            s << i/2 + 1 << _turns_sep << ' ';
         }
 
         s << mp.encode(moves[i]);
@@ -88,7 +88,7 @@ std::string MoveParser::encode(const PDN::Move& move) const
     const CellParser cp(_format);
     std::string result;
     const auto& cells = move._cells;
-    const char sep = move._is_eat ? 'x' : '-';
+    const char sep = move._is_eat ? _eat_sep : _step_sep;
     for (int i = 0; i < cells.size(); ++i)
     {
         result += cp.encode(cells[i]);
@@ -103,8 +103,8 @@ std::string MoveParser::encode(const PDN::Move& move) const
 PDN::Move MoveParser::decode(const std::string& s) const
 {
     const CellParser cp(_format);
-    const bool is_eat = (s.find('x') != std::string::npos);
-    const char sep = is_eat ? 'x' : '-';
+    const bool is_eat = (s.find(_eat_sep) != std::string::npos);
+    const char sep = is_eat ? _eat_sep : _step_sep;
 
     std::stringstream ss(s);
     std::string item;

@@ -36,6 +36,8 @@ public:
 
 private:
     CellFormat _format;
+    const char _eat_sep = 'x';
+    const char _step_sep = '-';
 };
 
 class PdnParser
@@ -49,6 +51,7 @@ public:
 
 private:
     CellFormat _format;
+    const char _turns_sep = '.';
 };
 
 #endif // PDNPARSER_H
