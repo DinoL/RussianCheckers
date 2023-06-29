@@ -13,10 +13,7 @@ class MyModel : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int activePiece READ activePiece WRITE setActivePiece NOTIFY onActivePieceChange)
-    Q_PROPERTY(bool whiteTurn READ whiteTurn WRITE setWhiteTurn NOTIFY onTurnChange)
 public:
-    using state_t = uint32_t;
-
     MyModel(QObject* parent = nullptr);
 
     Q_INVOKABLE bool is_king(int cell) const;
@@ -38,11 +35,9 @@ public:
 
 public slots:
     Q_INVOKABLE void setActivePiece(int i_activePiece);
-    void setWhiteTurn(bool whiteTurn);
 
 signals:
     void onActivePieceChange(int activePiece);
-    void onTurnChange(bool whiteTurn);
 
 private:
     bool _whiteTurn;

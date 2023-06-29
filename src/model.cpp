@@ -145,11 +145,3 @@ void MyModel::setActivePiece(int i_activePiece)
     emit onActivePieceChange(i_activePiece);
 }
 
-void MyModel::setWhiteTurn(bool whiteTurn)
-{
-    if (_whiteTurn == whiteTurn)
-        return;
-
-    _whiteTurn = whiteTurn;
-    emit onTurnChange(whiteTurn);
-}

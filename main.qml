@@ -28,7 +28,7 @@ ApplicationWindow {
             Layout.rowSpan: gridLayout.rows
             readonly property int padSize: Math.min(root.width, root.height) / 34
             readonly property int squareSize: 4 * padSize
-            property bool whiteTurn : Model.whiteTurn;
+            property bool whiteTurn : Model.whiteTurn();
             property int curTurn: 0
 
             width: squareSize * 8 + 2*padSize
@@ -246,12 +246,12 @@ ApplicationWindow {
                             }
                             if (Model.activePiece >= 0 && Model.piece_can_move_to(Model.activePiece, index)) {
                                 Model.move_piece_to(index);
-                                board.whiteTurn = Model.whiteTurn;
+                                board.whiteTurn = Model.whiteTurn();
                                 cell.has_piece = Model.has_any_piece(index)
 
                                 if (!Model.has_movable_fields())
                                 {
-                                    var player_name = board.whiteTurn ? "White" : "Black"
+                                    var player_name = board.whiteTurn() ? "White" : "Black"
                                     gameEnded.text = (player_name + " has lost the game")
                                     gameEnded.open()
                                     board.curTurn = 0
@@ -280,7 +280,7 @@ ApplicationWindow {
             text: "Restart"
             onClicked: {
                 Model.restart()
-                board.whiteTurn = Model.whiteTurn
+                board.whiteTurn = Model.whiteTurn()
                 board.curTurn = 0;
             }
         }
