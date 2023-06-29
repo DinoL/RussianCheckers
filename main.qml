@@ -19,7 +19,7 @@ ApplicationWindow {
 
     GridLayout {
         id: gridLayout
-        rows: 4
+        rows: 5
         flow: GridLayout.TopToBottom
         anchors.fill: parent
 
@@ -261,6 +261,19 @@ ApplicationWindow {
                         }
                     }
                 }
+            }
+        }
+
+        TextArea {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Layout.columnSpan: 2
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            font.pointSize: 20
+            text: {
+                var cur = board.curTurn
+                Model.piece_count(true) + "-" + Model.piece_count(false)
             }
         }
 

@@ -136,6 +136,11 @@ void MyModel::move_forward()
     _activePiece = -1;
 }
 
+int MyModel::piece_count(bool is_white) const
+{
+    return alg::count(_logic.get_state(is_white));
+}
+
 void MyModel::setActivePiece(int i_activePiece)
 {
     if (_activePiece == i_activePiece)

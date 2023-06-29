@@ -32,6 +32,7 @@ public:
     Q_INVOKABLE void import_history(const QUrl& file_url);
     Q_INVOKABLE void move_back();
     Q_INVOKABLE void move_forward();
+    Q_INVOKABLE int piece_count(bool is_white) const;
 
 public slots:
     Q_INVOKABLE void setActivePiece(int i_activePiece);

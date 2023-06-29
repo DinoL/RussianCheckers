@@ -64,4 +64,15 @@ namespace alg
         return k;
     }
 
+    int count(state_t s)
+    {
+        int cnt = 0;
+        while (s)
+        {
+            ++cnt;
+            s ^= first_set_piece(s);
+        }
+        return cnt;
+    }
+
 }
