@@ -251,7 +251,7 @@ ApplicationWindow {
 
                                 if (!Model.has_movable_fields())
                                 {
-                                    var player_name = board.whiteTurn() ? "White" : "Black"
+                                    var player_name = board.whiteTurn ? "White" : "Black"
                                     gameEnded.text = (player_name + " has lost the game")
                                     gameEnded.open()
                                     board.curTurn = 0
