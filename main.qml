@@ -280,6 +280,7 @@ ApplicationWindow {
             text: "Restart"
             onClicked: {
                 Model.restart()
+                board.whiteTurn = Model.whiteTurn
                 board.curTurn = 0;
             }
         }
