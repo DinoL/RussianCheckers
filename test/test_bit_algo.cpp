@@ -74,3 +74,12 @@ TEST(BitAlgoTests, FirstSetCell)
     EXPECT_EQ(alg::first_set_cell(0xff000000), 24);
     EXPECT_EQ(alg::first_set_cell(0x80000000), 31);
 }
+
+TEST(BitAlgoTests, Count)
+{
+    EXPECT_EQ(alg::count(0), 0);
+    EXPECT_EQ(alg::count(1), 1);
+    EXPECT_EQ(alg::count(0x800200), 2);
+    EXPECT_EQ(alg::count(0x10000000), 1);
+    EXPECT_EQ(alg::count(0xd1ac4000), 9);
+}
