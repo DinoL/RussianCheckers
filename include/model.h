@@ -40,6 +40,9 @@ public slots:
 signals:
     void onActivePieceChange(int activePiece);
 
+protected:
+    void set_from_history(int turn);
+
 private:
     bool _whiteTurn;
     int _activePiece;

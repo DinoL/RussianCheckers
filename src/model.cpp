@@ -64,7 +64,9 @@ void MyModel::move_piece_to(int cell)
 {
     int piece = activePiece();
     if (piece < 0)
+    {
         return;
+    }
 
     _logic.move_piece(piece, cell);
     _whiteTurn = _logic.is_white_turn();
@@ -119,9 +121,7 @@ void MyModel::move_back()
         return;
     }
 
-    --_curTurn;
-    _logic.set_state(_history[_curTurn]);
-    _activePiece = -1;
+    set_from_history(--_curTurn);
 }
 
 void MyModel::move_forward()
@@ -131,9 +131,7 @@ void MyModel::move_forward()
         return;
     }
 
-    ++_curTurn;
-    _logic.set_state(_history[_curTurn]);
-    _activePiece = -1;
+    set_from_history(++_curTurn);
 }
 
 int MyModel::piece_count(bool is_white) const
@@ -141,10 +139,23 @@ int MyModel::piece_count(bool is_white) const
     return alg::count(_logic.get_state(is_white));
 }
 
+void MyModel::set_from_history(int turn)
+{
+    if (turn >= _history.size() || turn < 0)
+    {
+        return;
+    }
+
+    _logic.set_state(_history[turn]);
+    _activePiece = -1;
+}
+
 void MyModel::setActivePiece(int i_activePiece)
 {
     if (_activePiece == i_activePiece)
+    {
         return;
+    }
 
     _activePiece = i_activePiece;
     emit onActivePieceChange(i_activePiece);
