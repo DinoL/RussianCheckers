@@ -6,7 +6,7 @@ project(${PROJECT_NAME} VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.2 REQUIRED COMPONENTS Quick)
+find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Network)
 
 set(INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set(SRC_DIR ${PROJECT_SOURCE_DIR}/src)
@@ -37,6 +37,8 @@ set(APP_FILES
     ${SRC_DIR}/main.cpp
     ${SRC_DIR}/model.cpp
     ${INCLUDE_DIR}/model.h
+    ${SRC_DIR}/network_connection.cpp
+    ${INCLUDE_DIR}/network_connection.h
 )
 
 add_library(checkersLibrary ${COMMON_FILES})
@@ -59,6 +61,7 @@ set_target_properties(appRussianCheckers PROPERTIES
 
 target_link_libraries(appRussianCheckers
     PRIVATE Qt6::Quick
+    PRIVATE Qt6::Network
     PUBLIC checkersLibrary
 )
 
