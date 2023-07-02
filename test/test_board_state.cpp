@@ -33,7 +33,7 @@ TEST(BoardStateTests, ClearCells)
                       0xa2481b24,
                       0x00108002,
                       0x02001100,
-                      true, -1};
+                      0, true, -1};
     state2.clear_cells(0x366cc993);
     EXPECT_EQ(state2.filled(), 0xc913322c);
     EXPECT_TRUE(state2.valid());
@@ -45,7 +45,7 @@ TEST(BoardStateTests, MovePiece)
                      0xa2481b24,
                      0x00108002,
                      0x02001100,
-                     false, -1};
+                     0, false, -1};
     EXPECT_TRUE(state.valid());
     state.move_piece(12, 21);
 
@@ -53,7 +53,7 @@ TEST(BoardStateTests, MovePiece)
                         0xa2680b24,
                         0x00108002,
                         0x02200100,
-                        false, -1};
+                        0, false, -1};
     EXPECT_EQ(state, expected);
     EXPECT_TRUE(state.valid());
 }
@@ -64,7 +64,7 @@ TEST(BoardStateTests, BecomeKing)
                      0x40,
                      0,
                      0,
-                     true, -1};
+                     0, true, -1};
     EXPECT_TRUE(state.valid());
     state.move_piece(26, 29);
     state.move_piece(6, 3);
@@ -73,7 +73,7 @@ TEST(BoardStateTests, BecomeKing)
                         0x8,
                         0x20000000,
                         0x8,
-                        true, -1};
+                        0, true, -1};
     EXPECT_EQ(state, expected);
     EXPECT_TRUE(state.valid());
 }
@@ -84,7 +84,7 @@ TEST(BoardStateTests, InvalidWhiteBlackIntersect)
                      0x5432117a,
                      0,
                      0,
-                     true, -1};
+                     0, true, -1};
     EXPECT_FALSE(state.valid());
     state._black &= ~0x100;
     EXPECT_TRUE(state.valid());
@@ -96,7 +96,7 @@ TEST(BoardStateTests, InvalidWhiteKingOutside)
                      0x54321072,
                      0x8,
                      0,
-                     true, -1};
+                     0, true, -1};
     EXPECT_FALSE(state.valid());
     state._white |= state._white_kings;
     EXPECT_TRUE(state.valid());
@@ -109,7 +109,7 @@ TEST(BoardStateTests, InvalidBlackKingOutside)
                      0x54321072,
                      0,
                      0x8,
-                     true, -1};
+                     0, true, -1};
     EXPECT_FALSE(state.valid());
     state._black |= state._black_kings;
     EXPECT_TRUE(state.valid());
@@ -121,7 +121,7 @@ TEST(BoardStateTests, InvalidTooLowEatingPiece)
                      0x5432107a,
                      0x5,
                      0x8,
-                     false, -2};
+                     0, false, -2};
     EXPECT_FALSE(state.valid());
     state._eating_piece = -1;
     EXPECT_TRUE(state.valid());
@@ -133,7 +133,7 @@ TEST(BoardStateTests, InvalidTooHighEatingPiece)
                      0x5432107a,
                      0x5,
                      0x8,
-                     true, 32};
+                     0, true, 32};
     EXPECT_FALSE(state.valid());
     state._eating_piece = 31;
     EXPECT_TRUE(state.valid());
@@ -145,7 +145,7 @@ TEST(BoardStateTests, InvalidEatingPieceEmpty)
                      0x54321072,
                      0x5,
                      0x2,
-                     false, 3};
+                     0, false, 3};
     EXPECT_FALSE(state.valid());
     state._black |= alg::to_state(state._eating_piece);
     EXPECT_TRUE(state.valid());
@@ -157,7 +157,7 @@ TEST(BoardStateTests, InvalidEatingPieceWrongColor)
                      0x5432107a,
                      0x5,
                      0x2,
-                     true, 3};
+                     0, true, 3};
     EXPECT_FALSE(state.valid());
     state._eating_piece = 2;
     EXPECT_TRUE(state.valid());

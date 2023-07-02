@@ -24,7 +24,7 @@ TEST(HistoryTests, Size)
 TEST(HistoryTests, Top)
 {
     BoardState s;
-    BoardState t{0x87ff, 0xfff00000, 0, 0, false, -1};
+    BoardState t{0x87ff, 0xfff00000, 0, 0, 0, false, -1};
     History h;
     h.push(s);
     h.push(t);
@@ -35,8 +35,8 @@ TEST(HistoryTests, Top)
 
 TEST(HistoryTests, Pop)
 {
-    BoardState s{0x87ff, 0xfff00000, 0, 0, false, -1};
-    BoardState t{0x87ff, 0xff780000, 0, 0, true, -1};
+    BoardState s{0x87ff, 0xfff00000, 0, 0, 0, false, -1};
+    BoardState t{0x87ff, 0xff780000, 0, 0, 0, true, -1};
     History h;
     h.push(s);
     h.push(t);
@@ -48,7 +48,7 @@ TEST(HistoryTests, Pop)
 
 TEST(HistoryTests, PopLast)
 {
-    BoardState s{0x87ff, 0xfff00000, 0, 0, false, -1};
+    BoardState s{0x87ff, 0xfff00000, 0, 0, 0, false, -1};
     History h;
     h.push(s);
     h.pop();
@@ -57,9 +57,9 @@ TEST(HistoryTests, PopLast)
 
 TEST(HistoryTests, Clear)
 {
-    BoardState s{0x87ff, 0xfff00000, 0, 0, false, -1};
-    BoardState t{0x87ff, 0xff780000, 0, 0, true, -1};
-    BoardState u{0x96ff, 0xff780000, 0, 0, false, -1};
+    BoardState s{0x87ff, 0xfff00000, 0, 0, 0, false, -1};
+    BoardState t{0x87ff, 0xff780000, 0, 0, 0, true, -1};
+    BoardState u{0x96ff, 0xff780000, 0, 0, 0, false, -1};
     History h;
     h.push(s);
     h.push(t);
@@ -70,9 +70,9 @@ TEST(HistoryTests, Clear)
 
 TEST(HistoryTests, GetItem)
 {
-    BoardState s{0x87ff, 0xfff00000, 0, 0, false, -1};
-    BoardState t{0x87ff, 0xff780000, 0, 0, true, -1};
-    BoardState u{0x96ff, 0xff780000, 0, 0, false, -1};
+    BoardState s{0x87ff, 0xfff00000, 0, 0, 0, false, -1};
+    BoardState t{0x87ff, 0xff780000, 0, 0, 0, true, -1};
+    BoardState u{0x96ff, 0xff780000, 0, 0, 0, false, -1};
     History h;
     h.push(s);
     h.push(t);

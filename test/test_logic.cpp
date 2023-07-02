@@ -103,7 +103,7 @@ TEST(CheckersLogicTests, WhiteCurrentMoves)
                      0x14820000,
                      0x200,
                      0,
-                     true, -1};
+                     0, true, -1};
     EXPECT_TRUE(state.valid());
 
     CheckersLogic logic(state);
@@ -117,7 +117,7 @@ TEST(CheckersLogicTests, BlackCurrentMoves)
                      0x14820000,
                      0x200,
                      0x04000000,
-                     false, -1};
+                     0, false, -1};
     EXPECT_TRUE(state.valid());
 
     CheckersLogic logic(state);
@@ -131,7 +131,7 @@ TEST(CheckersLogicTests, WhiteCurrentEatMoves)
                      0x14920000,
                      0x200,
                      0,
-                     true, -1};
+                     0, true, -1};
     EXPECT_TRUE(state.valid());
 
     CheckersLogic logic(state);
@@ -145,7 +145,7 @@ TEST(CheckersLogicTests, BlackCurrentEatMoves)
                      0x14920000,
                      0x200,
                      0,
-                     false, -1};
+                     0, false, -1};
     EXPECT_TRUE(state.valid());
 
     CheckersLogic logic(state);
@@ -159,7 +159,7 @@ TEST(CheckersLogicTests, WhiteCurrentKingEatMoves)
                      0x14920000,
                      0x10200,
                      0,
-                     true, -1};
+                     0, true, -1};
     EXPECT_TRUE(state.valid());
 
     CheckersLogic logic(state);
@@ -173,7 +173,7 @@ TEST(CheckersLogicTests, BlackCurrentKingEatMoves)
                      0x14920000,
                      0x200,
                      0x00800000,
-                     false, -1};
+                     0, false, -1};
     EXPECT_TRUE(state.valid());
 
     CheckersLogic logic(state);
@@ -187,7 +187,7 @@ TEST(CheckersLogicTests, WhiteContinueEating)
                      0x1c024000,
                      0x20,
                      0x20000,
-                     true, 22};
+                     0, true, 22};
     EXPECT_TRUE(state.valid());
 
     CheckersLogic logic(state);
@@ -201,7 +201,7 @@ TEST(CheckersLogicTests, BlackContinueEating)
                      0x1c024000,
                      0x20,
                      0x20000,
-                     false, 26};
+                     0, false, 26};
     EXPECT_TRUE(state.valid());
 
     CheckersLogic logic(state);
@@ -215,7 +215,7 @@ TEST(CheckersLogicTests, WhiteStepMoves)
                      0x04188020,
                      0x10000010,
                      0x20,
-                     true, -1};
+                     0, true, -1};
     EXPECT_TRUE(state.valid());
 
     CheckersLogic logic(state);
@@ -231,7 +231,7 @@ TEST(CheckersLogicTests, BlackStepMoves)
                      0x04188020,
                      0x10000010,
                      0x20,
-                     false, -1};
+                     0, false, -1};
     EXPECT_TRUE(state.valid());
 
     CheckersLogic logic(state);
@@ -247,7 +247,7 @@ TEST(CheckersLogicTests, WhiteEatMoves)
                      0x0241c000,
                      0x400,
                      0x400000,
-                     true, -1};
+                     0, true, -1};
     EXPECT_TRUE(state.valid());
 
     CheckersLogic logic(state);
@@ -265,7 +265,7 @@ TEST(CheckersLogicTests, BlackEatMoves)
                      0x0241c000,
                      0x400,
                      0x400000,
-                     false, -1};
+                     0, false, -1};
     EXPECT_TRUE(state.valid());
 
     CheckersLogic logic(state);

@@ -11,6 +11,7 @@ public:
     state_t _black = constants::BLACK_START;
     state_t _white_kings = 0;
     state_t _black_kings = 0;
+    state_t _eaten = 0;
     bool _white_turn = true;
     int _eating_piece = -1;
 
@@ -20,7 +21,7 @@ public:
 
     state_t filled() const
     {
-        return _white | _black;
+        return _white | _black | _eaten;
     }
 
     void switch_turn()

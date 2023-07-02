@@ -20,8 +20,8 @@ TEST(PdnTests, OneMove)
 
 TEST(PdnTests, HistoryOneMove)
 {
-    BoardState s{0x87ff, 0xfff00000, 0, 0, false, -1};
-    BoardState t{0x87ff, 0xff780000, 0, 0, true, -1};
+    BoardState s{0x87ff, 0xfff00000, 0, 0, 0, false, -1};
+    BoardState t{0x87ff, 0xff780000, 0, 0, 0, true, -1};
     History h;
     h.push(s);
     h.push(t);
@@ -36,11 +36,11 @@ TEST(PdnTests, HistoryOneMove)
 TEST(PdnTests, HistoryMoves)
 {
     History h;
-    h.push(BoardState{0xfff, 0xfff00000, 0, 0, true, -1});
-    h.push(BoardState{0x2bff, 0xfff00000, 0, 0, false, -1});
-    h.push(BoardState{0x2bff, 0xffb40000, 0, 0, true, -1});
-    h.push(BoardState{0x400bff, 0xffb00000, 0, 0, false, -1});
-    h.push(BoardState{0xbff, 0xfbb80000, 0, 0, true, -1});
+    h.push(BoardState{0xfff, 0xfff00000, 0, 0, 0, true, -1});
+    h.push(BoardState{0x2bff, 0xfff00000, 0, 0, 0, false, -1});
+    h.push(BoardState{0x2bff, 0xffb40000, 0, 0, 0, true, -1});
+    h.push(BoardState{0x400bff, 0xffb00000, 0, 0, 0, false, -1});
+    h.push(BoardState{0xbff, 0xfbb80000, 0, 0, 0, true, -1});
 
     const PDN p = PDN::from_history(h);
     const PDN::Move move1{{10,13}, false};
@@ -58,9 +58,9 @@ TEST(PdnTests, HistoryMoves)
 TEST(PdnTests, HistoryJumpMoves)
 {
     History h;
-    h.push(BoardState{0x800610, 0xd5420100, 0, 0x100, false, -1});
-    h.push(BoardState{0x800600, 0xd5420002, 0, 0x2, false, 1});
-    h.push(BoardState{0x800200, 0xd54a0000, 0, 0x80000, true, -1});
+    h.push(BoardState{0x800610, 0xd5420100, 0, 0x100, 0, false, -1});
+    h.push(BoardState{0x800600, 0xd5420002, 0, 0x2, 0, false, 1});
+    h.push(BoardState{0x800200, 0xd54a0000, 0, 0x80000, 0, true, -1});
 
     const PDN p = PDN::from_history(h);
     const PDN::Move move{{8, 1, 19}, true};
@@ -72,9 +72,9 @@ TEST(PdnTests, HistoryJumpMoves)
 TEST(PdnTests, HistoryStraightJump)
 {
     History h;
-    h.push(BoardState{0x08000200, 0x00000001, 0, 0x1, false, -1});
-    h.push(BoardState{0x08000000, 0x00040000, 0, 0x40000, false, 18});
-    h.push(BoardState{0x00000000, 0x80000000, 0, 0x80000000, true, -1});
+    h.push(BoardState{0x08000200, 0x00000001, 0, 0x1, 0, false, -1});
+    h.push(BoardState{0x08000000, 0x00040000, 0, 0x40000, 0, false, 18});
+    h.push(BoardState{0x00000000, 0x80000000, 0, 0x80000000, 0, true, -1});
 
     const PDN p = PDN::from_history(h);
     const PDN::Move move{{0, 18, 31}, true};
