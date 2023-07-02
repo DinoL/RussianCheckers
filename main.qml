@@ -183,6 +183,8 @@ ApplicationWindow {
                         height: width
                         color: {
                             var cur = board.curTurn
+                            if (Model.was_eaten(index))
+                                return Model.whiteTurn() ? "#aa444444" : "#aaffffee"
                             Model.has_white_piece(index) ? "#ffe" : "#444"
                         }
                         border.color: "black"
@@ -215,7 +217,7 @@ ApplicationWindow {
                         Rectangle {
                             width: parent.width * 0.7
                             height: width
-                            color: parent.color
+                            color: "transparent"
                             x: (parent.width - width) * 0.5
                             y: x
                             border.color: parent.border.color
@@ -225,7 +227,7 @@ ApplicationWindow {
                             Rectangle {
                                 width: parent.width * 0.5
                                 height: width
-                                color: parent.color
+                                color: "transparent"
                                 x: (parent.width - width) * 0.5
                                 y: x
                                 border.color: parent.border.color

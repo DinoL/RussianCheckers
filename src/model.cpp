@@ -44,6 +44,11 @@ bool MyModel::has_black_piece(int cell) const
     return alg::has_piece(_logic.get_state(false), cell);
 }
 
+bool MyModel::was_eaten(int cell) const
+{
+    return alg::has_piece(_logic.state()._eaten, cell);
+}
+
 bool MyModel::can_move_from(int cell) const
 {
     return alg::has_piece(_logic.get_state(_logic.is_white_turn()), cell) &&

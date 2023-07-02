@@ -54,14 +54,14 @@ state_t CheckersLogic::man_step_moves(state_t s, bool is_white)
 state_t CheckersLogic::man_eat_moves(state_t s, state_t b)
 {
     return
-        (((s  & 0x70707 & (b >> 4)) << 9)
-        |((s  & 0x707070 & (b >> 5)) << 9)
-        |((s  & 0xe0e0e0 & (b >> 4)) << 7)
-        |((s  & 0xe0e0e & (b >> 3)) << 7)
-        |((s  & 0xe0e0e000 & (b << 4)) >> 9)
-        |((s  & 0xe0e0e00 & (b << 5)) >> 9)
-        |((s  & 0x7070700 & (b << 4)) >> 7)
-        |((s  & 0x70707000 & (b << 3)) >> 7));
+        (((s & 0x70707 & (b >> 4)) << 9)
+        |((s & 0x707070 & (b >> 5)) << 9)
+        |((s & 0xe0e0e0 & (b >> 4)) << 7)
+        |((s & 0xe0e0e & (b >> 3)) << 7)
+        |((s & 0xe0e0e000 & (b << 4)) >> 9)
+        |((s & 0xe0e0e00 & (b << 5)) >> 9)
+        |((s & 0x7070700 & (b << 4)) >> 7)
+        |((s & 0x70707000 & (b << 3)) >> 7));
 }
 
 state_t CheckersLogic::eat_moves(state_t s, bool is_white) const
@@ -183,6 +183,7 @@ void CheckersLogic::move_piece(int piece, int cell)
         const state_t start = alg::to_state(std::min(piece, cell));
         const state_t end = alg::to_state(std::max(piece, cell));
         const state_t to_remove = get_between(start, end);
+        _state._eaten |= (to_remove & get_state(!is_white_turn()));
         clear_cells(to_remove);
     }
 
@@ -195,6 +196,7 @@ void CheckersLogic::move_piece(int piece, int cell)
     {
         switch_turn();
         _state._eating_piece = -1;
+        _state._eaten = 0;
     }
 }
 

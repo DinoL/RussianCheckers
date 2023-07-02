@@ -21,6 +21,7 @@ public:
     Q_INVOKABLE bool has_any_piece(int cell) const;
     Q_INVOKABLE bool has_white_piece(int cell) const;
     Q_INVOKABLE bool has_black_piece(int cell) const;
+    Q_INVOKABLE bool was_eaten(int cell) const;
     Q_INVOKABLE bool can_move_from(int cell) const;
     Q_INVOKABLE bool has_movable_fields() const;
     Q_INVOKABLE bool can_move_to(int cell) const;
