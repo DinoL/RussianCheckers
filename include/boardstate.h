@@ -29,7 +29,7 @@ public:
         _white_turn = !_white_turn;
     }
 
-    void clear_cells(state_t to_remove);
+    void eat_from_cells(state_t to_remove);
 
     state_t get_state(bool is_white) const
     {

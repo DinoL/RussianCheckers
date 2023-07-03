@@ -28,9 +28,10 @@ bool BoardState::valid() const
         == ((_eating_piece >= 0) && _white_turn));
 }
 
-void BoardState::clear_cells(state_t to_remove)
+void BoardState::eat_from_cells(state_t to_remove)
 {
     state_t negate = ~to_remove;
+    _eaten |= (to_remove & get_state(!_white_turn));
     _white &= negate;
     _white_kings &= negate;
     _black &= negate;

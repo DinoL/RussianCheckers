@@ -183,8 +183,7 @@ void CheckersLogic::move_piece(int piece, int cell)
         const state_t start = alg::to_state(std::min(piece, cell));
         const state_t end = alg::to_state(std::max(piece, cell));
         const state_t to_remove = get_between(start, end);
-        _state._eaten |= (to_remove & get_state(!is_white_turn()));
-        clear_cells(to_remove);
+        eat_from_cells(to_remove);
     }
 
     const bool can_eat_more = eat_moves(alg::to_state(cell), is_white_turn());
@@ -200,9 +199,9 @@ void CheckersLogic::move_piece(int piece, int cell)
     }
 }
 
-void CheckersLogic::clear_cells(state_t to_remove)
+void CheckersLogic::eat_from_cells(state_t to_remove)
 {
-    _state.clear_cells(to_remove);
+    _state.eat_from_cells(to_remove);
 }
 
 void CheckersLogic::set_state(const BoardState& state)

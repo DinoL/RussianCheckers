@@ -17,7 +17,7 @@ public:
     void switch_turn();
     void reset();
     void move_piece(int piece, int cell);
-    void clear_cells(state_t to_remove);
+    void eat_from_cells(state_t to_remove);
     void set_state(const BoardState& state);
 
     // queries
