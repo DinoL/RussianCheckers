@@ -29,7 +29,7 @@ public:
     void stop_listening() {}
 
 private:
-    QPointer<QTcpSocket> client_connection;
+    QPointer<QTcpSocket> _client_connection;
     QTcpServer _listening_socket;
     void prepare_connection_status() {}
 

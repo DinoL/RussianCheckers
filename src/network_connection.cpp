@@ -12,17 +12,18 @@ NetworkConnection::NetworkConnection()
 
 bool NetworkConnection::is_connected_remotely() const
 {
-    return false;
+    return _client_connection &&
+           _client_connection->state() == QAbstractSocket::ConnectedState;
 }
 
 bool NetworkConnection::is_listening() const
 {
-    return false;
+    return _listening_socket.isListening();
 }
 
 bool NetworkConnection::is_ready() const
 {
-    return false;
+    return is_connected_remotely();
 }
 
 QHostAddress NetworkConnection::preferred_host_address(
