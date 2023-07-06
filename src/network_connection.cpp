@@ -48,3 +48,35 @@ QHostAddress NetworkConnection::preferred_host_address(
     else
         return QHostAddress(QHostAddress::LocalHostIPv6);
 }
+
+void NetworkConnection::slot_accept_connection()
+{
+    auto socket = _listening_socket.nextPendingConnection();
+
+    if(!socket)
+        return;
+    else if(_client_connection)
+    {
+        socket->abort();
+        socket->deleteLater();
+        return;
+    }
+    else
+        _client_connection = socket;
+
+    _client_connection->setParent(this);
+
+    emit connected_to_client();
+    connect(_client_connection,
+            SIGNAL(disconnected()),
+            this,
+            SLOT(slot_client_disconnected()));
+    connect(_client_connection,
+            SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
+            _client_connection,
+            SIGNAL(disconnected()));
+    connect(_client_connection,
+            SIGNAL(readyRead()),
+            this,
+            SLOT(slot_update_board()));
+}

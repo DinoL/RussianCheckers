@@ -34,7 +34,7 @@ private:
     void prepare_connection_status() {}
 
 private slots:
-    void slot_accept_connection() {}
+    void slot_accept_connection();
     void slot_client_connected() {}
     void slot_client_disconnected() {}
     void slot_disconnected(QAbstractSocket::SocketError error) {}
