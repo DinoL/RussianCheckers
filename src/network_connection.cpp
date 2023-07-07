@@ -49,6 +49,21 @@ QHostAddress NetworkConnection::preferred_host_address(
         return QHostAddress(QHostAddress::LocalHostIPv6);
 }
 
+void NetworkConnection::set_listen()
+{
+    if(_listening_socket.isListening())
+        return;
+
+    _listening_socket.setMaxPendingConnections(1);
+
+    QHostAddress address(QHostAddress::Any);
+    quint16 port = 0; // set from UI
+
+    _listening_socket.listen(address, port);
+
+    prepare_connection_status();
+}
+
 void NetworkConnection::slot_accept_connection()
 {
     auto socket = _listening_socket.nextPendingConnection();

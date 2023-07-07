@@ -25,7 +25,7 @@ public:
     void disconnect_remotely() {}
     void initialize() {}
     void quit() {}
-    void set_listen() {}
+    void set_listen();
     void stop_listening() {}
 
 private:
