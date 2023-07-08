@@ -19,7 +19,7 @@ ApplicationWindow {
 
     GridLayout {
         id: gridLayout
-        rows: 5
+        rows: 6
         flow: GridLayout.TopToBottom
         anchors.fill: parent
 
@@ -318,6 +318,17 @@ ApplicationWindow {
                 board.curTurn = 0;
             }
         }
+        Button {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            Layout.columnSpan: 2
+            text: "Connect"
+            onClicked: {
+                Model.connect()
+                board.curTurn = 0;
+            }
+        }
+
         Button {
             Layout.fillHeight: true
             Layout.fillWidth: true

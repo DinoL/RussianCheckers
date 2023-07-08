@@ -144,6 +144,11 @@ int MyModel::piece_count(bool is_white) const
     return alg::count(_logic.get_state(is_white));
 }
 
+void MyModel::connect()
+{
+    _connection.set_listen();
+}
+
 void MyModel::set_from_history(int turn)
 {
     if (turn >= _history.size() || turn < 0)

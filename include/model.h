@@ -6,6 +6,7 @@
 
 #include "checkerslogic.h"
 #include "history.h"
+#include "network_connection.h"
 
 using state_t = uint32_t;
 
@@ -34,6 +35,7 @@ public:
     Q_INVOKABLE void move_back();
     Q_INVOKABLE void move_forward();
     Q_INVOKABLE int piece_count(bool is_white) const;
+    Q_INVOKABLE void connect();
 
 public slots:
     Q_INVOKABLE void setActivePiece(int i_activePiece);
@@ -51,6 +53,7 @@ private:
 
     CheckersLogic _logic;
     History _history;
+    NetworkConnection _connection;
 };
 
 #endif // MODEL_H
